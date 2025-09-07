@@ -16,16 +16,6 @@ export function useActiveListings(_first = 20, _skip = 0, _orderBy = "createdAt"
   };
 }
 
-// Hook for active auctions
-export function useActiveAuctions(_first = 20, _skip = 0, _orderBy = "createdAt", _orderDirection = "desc") {
-  return {
-    auctions: [],
-    loading: false,
-    error: null,
-    refetch: () => {},
-  };
-}
-
 // Hook for user listings
 export function useUserListings() {
   const { address: _address } = useAccount();
@@ -42,28 +32,6 @@ export function useUserPurchases() {
   const { address: _address } = useAccount();
   return {
     purchases: [],
-    loading: false,
-    error: null,
-    refetch: () => {},
-  };
-}
-
-// Hook for user auctions
-export function useUserAuctions() {
-  const { address: _address } = useAccount();
-  return {
-    auctions: [],
-    loading: false,
-    error: null,
-    refetch: () => {},
-  };
-}
-
-// Hook for user bids
-export function useUserBids() {
-  const { address: _address } = useAccount();
-  return {
-    bids: [],
     loading: false,
     error: null,
     refetch: () => {},
@@ -105,16 +73,6 @@ export function useUserStats() {
 export function useListingDetails(_listingId: string) {
   return {
     listing: null,
-    loading: false,
-    error: null,
-    refetch: () => {},
-  };
-}
-
-// Hook for auction details
-export function useAuctionDetails(_auctionId: string) {
-  return {
-    auction: null,
     loading: false,
     error: null,
     refetch: () => {},

@@ -22,17 +22,6 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         bool active;
     }
 
-    struct Auction {
-        uint256 tokenId;
-        address nftContract;
-        address seller;
-        uint256 startingPrice;
-        uint256 highestBid;
-        address highestBidder;
-        uint256 endTime;
-        bool active;
-        bool ended;
-    }
 
     struct Offer {
         address buyer;
@@ -47,13 +36,11 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
 
     // Mappings
     mapping(bytes32 => Listing) public listings;
-    mapping(bytes32 => Auction) public auctions;
     mapping(bytes32 => Offer[]) public offers;
     mapping(address => uint256) public pendingWithdrawals;
 
-    // Arrays to track active listings and auctions
+    // Arrays to track active listings
     bytes32[] public activeListings;
-    bytes32[] public activeAuctions;
 
     // Events
     event ItemListed(
@@ -73,26 +60,6 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
 
     event ListingCanceled(bytes32 indexed listingId);
 
-    event AuctionCreated(
-        bytes32 indexed auctionId,
-        address indexed seller,
-        address indexed nftContract,
-        uint256 tokenId,
-        uint256 startingPrice,
-        uint256 endTime
-    );
-
-    event BidPlaced(
-        bytes32 indexed auctionId,
-        address indexed bidder,
-        uint256 amount
-    );
-
-    event AuctionEnded(
-        bytes32 indexed auctionId,
-        address indexed winner,
-        uint256 amount
-    );
 
     event OfferMade(
         bytes32 indexed itemId,
@@ -193,108 +160,6 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         emit ListingCanceled(listingId);
     }
 
-    // ============================================================================
-    // AUCTION SYSTEM
-    // ============================================================================
-
-    function createAuction(
-        address nftContract,
-        uint256 tokenId,
-        uint256 startingPrice,
-        uint256 duration
-    ) external nonReentrant returns (bytes32) {
-        require(startingPrice > 0, "Starting price must be greater than zero");
-        require(duration > 0, "Duration must be greater than zero");
-        
-        IERC721 nft = IERC721(nftContract);
-        require(nft.ownerOf(tokenId) == msg.sender, "Not the owner");
-        require(
-            nft.getApproved(tokenId) == address(this) || 
-            nft.isApprovedForAll(msg.sender, address(this)),
-            "Contract not approved"
-        );
-
-        bytes32 auctionId = keccak256(
-            abi.encodePacked(nftContract, tokenId, msg.sender, block.timestamp)
-        );
-
-        auctions[auctionId] = Auction({
-            tokenId: tokenId,
-            nftContract: nftContract,
-            seller: msg.sender,
-            startingPrice: startingPrice,
-            highestBid: 0,
-            highestBidder: address(0),
-            endTime: block.timestamp + duration,
-            active: true,
-            ended: false
-        });
-
-        activeAuctions.push(auctionId);
-
-        emit AuctionCreated(
-            auctionId,
-            msg.sender,
-            nftContract,
-            tokenId,
-            startingPrice,
-            block.timestamp + duration
-        );
-
-        return auctionId;
-    }
-
-    function placeBid(bytes32 auctionId) external payable nonReentrant {
-        Auction storage auction = auctions[auctionId];
-        require(auction.active, "Auction not active");
-        require(block.timestamp < auction.endTime, "Auction ended");
-        require(msg.value > auction.highestBid, "Bid too low");
-        require(msg.value >= auction.startingPrice, "Bid below starting price");
-
-        // Refund previous highest bidder
-        if (auction.highestBidder != address(0)) {
-            pendingWithdrawals[auction.highestBidder] += auction.highestBid;
-        }
-
-        auction.highestBid = msg.value;
-        auction.highestBidder = msg.sender;
-
-        emit BidPlaced(auctionId, msg.sender, msg.value);
-    }
-
-    function endAuction(bytes32 auctionId) external nonReentrant {
-        Auction storage auction = auctions[auctionId];
-        require(auction.active, "Auction not active");
-        require(block.timestamp >= auction.endTime, "Auction still ongoing");
-        require(!auction.ended, "Auction already ended");
-
-        auction.active = false;
-        auction.ended = true;
-        _removeFromActiveAuctions(auctionId);
-
-        if (auction.highestBidder != address(0)) {
-            // Calculate fees
-            uint256 fee = (auction.highestBid * marketFee) / 10000;
-            uint256 sellerAmount = auction.highestBid - fee;
-
-            // Transfer NFT to winner
-            IERC721(auction.nftContract).safeTransferFrom(
-                auction.seller,
-                auction.highestBidder,
-                auction.tokenId
-            );
-
-            // Handle payments
-            if (fee > 0) {
-                pendingWithdrawals[owner()] += fee;
-            }
-            pendingWithdrawals[auction.seller] += sellerAmount;
-
-            emit AuctionEnded(auctionId, auction.highestBidder, auction.highestBid);
-        } else {
-            emit AuctionEnded(auctionId, address(0), 0);
-        }
-    }
 
     // ============================================================================
     // OFFER SYSTEM
@@ -408,9 +273,6 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         return activeListings;
     }
 
-    function getActiveAuctions() external view returns (bytes32[] memory) {
-        return activeAuctions;
-    }
 
     function getOffers(address nftContract, uint256 tokenId) 
         external 
@@ -463,15 +325,6 @@ contract NFTMarketplace is ReentrancyGuard, Ownable {
         }
     }
 
-    function _removeFromActiveAuctions(bytes32 auctionId) internal {
-        for (uint256 i = 0; i < activeAuctions.length; i++) {
-            if (activeAuctions[i] == auctionId) {
-                activeAuctions[i] = activeAuctions[activeAuctions.length - 1];
-                activeAuctions.pop();
-                break;
-            }
-        }
-    }
 
     // ============================================================================
     // RECEIVE FUNCTION

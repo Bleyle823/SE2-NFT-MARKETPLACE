@@ -41,26 +41,70 @@ const Home: NextPage = () => {
         </div>
 
         <div className="grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col md:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <BugAntIcon className="h-8 w-8 fill-secondary mb-3" />
+              <h3 className="font-semibold mb-2">Debug Contracts</h3>
+              <p className="text-sm text-base-content/70 mb-4">
+                Tinker with your smart contracts and test functionality.
               </p>
+              <Link href="/debug" className="btn btn-primary btn-sm">
+                Open Debug
+              </Link>
             </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
+
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary mb-3" />
+              <h3 className="font-semibold mb-2">Block Explorer</h3>
+              <p className="text-sm text-base-content/70 mb-4">Explore your local transactions and blockchain data.</p>
+              <Link href="/blockexplorer" className="btn btn-primary btn-sm">
+                Open Explorer
+              </Link>
+            </div>
+
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <span className="text-4xl mb-3">🎨</span>
+              <h3 className="font-semibold mb-2">NFT Marketplace</h3>
+              <p className="text-sm text-base-content/70 mb-4">Browse and trade NFTs from various collections.</p>
+              <Link href="/marketplace" className="btn btn-primary btn-sm">
+                Open Marketplace
+              </Link>
+            </div>
+
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <span className="text-4xl mb-3">📦</span>
+              <h3 className="font-semibold mb-2">Create Collection</h3>
+              <p className="text-sm text-base-content/70 mb-4">Create your own NFT collection with custom supply.</p>
+              <Link href="/create-collection" className="btn btn-primary btn-sm">
+                Create Collection
+              </Link>
+            </div>
+
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <span className="text-4xl mb-3">✨</span>
+              <h3 className="font-semibold mb-2">Mint NFT</h3>
+              <p className="text-sm text-base-content/70 mb-4">Mint NFTs from existing collections.</p>
+              <Link href="/mint" className="btn btn-primary btn-sm">
+                Mint NFT
+              </Link>
+            </div>
+
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <span className="text-4xl mb-3">👤</span>
+              <h3 className="font-semibold mb-2">My Collections</h3>
+              <p className="text-sm text-base-content/70 mb-4">View and manage your created collections.</p>
+              <Link href="/my-collections" className="btn btn-primary btn-sm">
+                View Collections
+              </Link>
+            </div>
+
+            <div className="flex flex-col bg-base-100 px-6 py-8 text-center items-center rounded-3xl">
+              <span className="text-4xl mb-3">🖼️</span>
+              <h3 className="font-semibold mb-2">My NFTs</h3>
+              <p className="text-sm text-base-content/70 mb-4">View and manage your owned NFTs.</p>
+              <Link href="/my-nfts" className="btn btn-primary btn-sm">
+                View My NFTs
+              </Link>
             </div>
           </div>
         </div>
