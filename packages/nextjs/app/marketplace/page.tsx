@@ -1,134 +1,127 @@
 "use client";
 
-import React, { useState } from "react";
-import { NFTMarketplaceGrid } from "~~/components/marketplace/NFTMarketplaceGrid";
+import { useEffect, useState } from "react";
+import type { NextPage } from "next";
+import { useAccount } from "wagmi";
+import { NFTListingCard } from "~~/components/marketplace/NFTListingCard";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 
-// // import { LoadingSpinner } from "~~/components/marketplace/LoadingSpinner";
+interface Listing {
+  listingId: bigint;
+  nftContract: string;
+  tokenId: bigint;
+  seller: string;
+  price: bigint;
+  isActive: boolean;
+  createdAt: bigint;
+}
 
-export default function MarketplacePage() {
-  const [filters, setFilters] = useState({
-    priceRange: [0, 100] as [number, number],
-    collection: "all",
-    sortBy: "recentlyListed",
-    searchQuery: "",
+const Marketplace: NextPage = () => {
+  const { address: connectedAddress, isConnected, isConnecting } = useAccount();
+  const [mounted, setMounted] = useState(false);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Get marketplace contract
+  const { data: marketplaceContract } = useScaffoldContract({
+    contractName: "NFTMarketplace",
   });
 
-  const handleFilterChange = (newFilters: Partial<typeof filters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+  // Fetch active listings
+  const fetchListings = async () => {
+    if (!marketplaceContract) return;
+    
+    try {
+      const activeListings = await marketplaceContract.read.getActiveListings();
+      setListings(activeListings);
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    fetchListings();
+  }, [marketplaceContract]);
+
+  if (!mounted) return null;
+
   return (
-    <div className="min-h-screen bg-base-200">
-      {/* Header */}
-      <div className="bg-base-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-base-content mb-4">NFT Marketplace</h1>
-            <p className="text-lg text-base-content/70 max-w-2xl mx-auto">
-              Discover, buy, and sell unique NFTs. Browse through our collection of digital art and collectibles.
-            </p>
-          </div>
+    <>
+      <div className="flex items-center flex-col flex-grow pt-10">
+        <div className="px-5">
+          <h1 className="text-center mb-8">
+            <span className="block text-4xl font-bold">NFT Ticket Marketplace</span>
+          </h1>
+          <p className="text-center text-base-content/70 mb-8">
+            Buy and sell event tickets securely on the blockchain
+          </p>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-base-100 rounded-lg shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Filters</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Price Range */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Price Range (ETH)</label>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={filters.priceRange[0]}
-                  onChange={e =>
-                    handleFilterChange({
-                      priceRange: [parseFloat(e.target.value) || 0, filters.priceRange[1]],
-                    })
-                  }
-                  className="input input-bordered input-sm w-full"
+        {!isConnected || isConnecting ? (
+          <div className="flex flex-col items-center gap-4">
+            <RainbowKitCustomConnectButton />
+            <p className="text-base-content/70">Connect your wallet to view listings</p>
+          </div>
+        ) : loading ? (
+          <div className="flex justify-center items-center">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        ) : listings && listings.length > 0 ? (
+          <>
+            <div className="flex justify-between items-center px-5 mb-6">
+              <div className="text-sm text-base-content/70">
+                {listings.length} ticket{listings.length !== 1 ? 's' : ''} available for purchase
+              </div>
+              <button 
+                className="btn btn-sm btn-outline" 
+                onClick={fetchListings}
+              >
+                Refresh
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-5 pb-10">
+              {listings.map((listing: Listing) => (
+                <NFTListingCard
+                  key={listing.listingId.toString()}
+                  listingId={listing.listingId}
+                  nftContract={listing.nftContract}
+                  tokenId={listing.tokenId}
+                  seller={listing.seller}
+                  price={listing.price}
+                  isActive={listing.isActive}
+                  onBuySuccess={fetchListings}
                 />
-                <span>to</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={filters.priceRange[1]}
-                  onChange={e =>
-                    handleFilterChange({
-                      priceRange: [filters.priceRange[0], parseFloat(e.target.value) || 100],
-                    })
-                  }
-                  className="input input-bordered input-sm w-full"
-                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-2">No Active Listings</h3>
+              <p className="text-base-content/70 mb-4">
+                Be the first to list your event tickets for resale!
+              </p>
+              <div className="flex gap-3 justify-center">
+                <a href="/myNFTs" className="btn btn-primary">
+                  List Your Tickets
+                </a>
+                <a href="/events" className="btn btn-secondary">
+                  Browse Events
+                </a>
               </div>
             </div>
-
-            {/* Collection */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Collection</label>
-              <select
-                value={filters.collection}
-                onChange={e => handleFilterChange({ collection: e.target.value })}
-                className="select select-bordered select-sm w-full"
-              >
-                <option value="all">All Collections</option>
-                <option value="myToken">MyToken Collection</option>
-                <option value="nftCollection">NFT Collections</option>
-              </select>
-            </div>
-
-            {/* Sort By */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Sort By</label>
-              <select
-                value={filters.sortBy}
-                onChange={e => handleFilterChange({ sortBy: e.target.value })}
-                className="select select-bordered select-sm w-full"
-              >
-                <option value="recentlyListed">Recently Listed</option>
-                <option value="priceLowToHigh">Price: Low to High</option>
-                <option value="priceHighToLow">Price: High to Low</option>
-              </select>
-            </div>
-
-            {/* Search */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Search</label>
-              <input
-                type="text"
-                placeholder="Search by token ID or seller..."
-                value={filters.searchQuery}
-                onChange={e => handleFilterChange({ searchQuery: e.target.value })}
-                className="input input-bordered input-sm w-full"
-              />
-            </div>
           </div>
-
-          {/* Clear Filters */}
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={() =>
-                setFilters({
-                  priceRange: [0, 100],
-                  collection: "all",
-                  sortBy: "recentlyListed",
-                  searchQuery: "",
-                })
-              }
-              className="btn btn-outline btn-sm"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-
-        {/* NFT Grid */}
-        <NFTMarketplaceGrid filters={filters} />
+        )}
       </div>
-    </div>
+    </>
   );
-}
+};
+
+export default Marketplace;

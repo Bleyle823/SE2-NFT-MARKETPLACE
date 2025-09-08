@@ -8,6 +8,7 @@ import { useScaffoldReadContract, useScaffoldWriteContract, useScaffoldContract 
 import { RainbowKitCustomConnectButton, AddressInput } from "~~/components/scaffold-eth";
 import { IPFSImage } from "~~/components/IPFSImage";
 import { EventData } from "~~/utils/eventTicket/types";
+import { formatEther } from "viem";
 
 // Utility function to get a valid image URL with fallback
 const getValidImageUrl = (imageUri: string | undefined): string => {
@@ -79,7 +80,8 @@ const OrganizerDashboard: NextPage = () => {
           description: eventFromContract.description,
           location: eventFromContract.location,
           eventDate: Number(eventFromContract.eventDate),
-          ticketPrice: eventFromContract.ticketPrice.toString(),
+          // Store as ETH string for consistent UI usage
+          ticketPrice: formatEther(eventFromContract.ticketPrice),
           maxTickets: Number(eventFromContract.maxTickets),
           ticketsSold: Number(eventFromContract.ticketsSold),
           organizer: eventFromContract.organizer,
@@ -214,7 +216,9 @@ const OrganizerDashboard: NextPage = () => {
   };
 
   const getRevenue = (event: EventData) => {
-    return (parseFloat(event.ticketPrice) * event.ticketsSold).toFixed(4);
+    // ticketPrice is already an ETH string; multiply by tickets sold
+    const priceEth = parseFloat(event.ticketPrice || "0");
+    return (priceEth * event.ticketsSold).toFixed(4);
   };
 
   const handleAddOrganizer = async () => {

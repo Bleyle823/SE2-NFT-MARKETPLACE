@@ -8,7 +8,8 @@ import { useScaffoldReadContract, useScaffoldWriteContract, useScaffoldContract 
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { IPFSImage } from "~~/components/IPFSImage";
 import { EventData } from "~~/utils/eventTicket/types";
-import { parseEther } from "viem";
+import { createEventTicketMetadata } from "~~/utils/eventTicket/metadata";
+import { formatEther } from "viem";
 
 // Utility function to get a valid image URL with fallback
 const getValidImageUrl = (imageUri: string | undefined): string => {
@@ -65,6 +66,7 @@ const Events: NextPage = () => {
           description: eventFromContract.description,
           location: eventFromContract.location,
           eventDate: Number(eventFromContract.eventDate),
+          // Store raw wei as string; format only for display
           ticketPrice: eventFromContract.ticketPrice.toString(),
           maxTickets: Number(eventFromContract.maxTickets),
           ticketsSold: Number(eventFromContract.ticketsSold),
@@ -157,7 +159,7 @@ const Events: NextPage = () => {
     fetchEvents();
   }, [eventIdCounter, eventTicketContract, fetchEventDataWithRetry]);
 
-  const handleMintTicket = async (eventId: number, ticketPrice: string) => {
+  const handleMintTicket = async (eventId: number, ticketPriceWei: string) => {
     if (!connectedAddress) {
       notification.error("Please connect your wallet");
       return;
@@ -167,13 +169,62 @@ const Events: NextPage = () => {
     const notificationId = notification.loading("Minting ticket...");
 
     try {
-      // Generate a simple token URI for the ticket
-      const tokenUri = `QmSampleHash${eventId}${Date.now()}`;
+      // Generate proper metadata for the ticket
+      const event = events.find(e => e.eventId === eventId);
+      if (!event) {
+        notification.error("Event not found");
+        return;
+      }
+
+      // Create proper ticket metadata using the event data
+      const defaultTicketMetadata = {
+        ticketType: "General Admission",
+        seatNumber: "", // Can be assigned later or left empty for general admission
+        venueSection: "General",
+        customAttributes: [
+          {
+            trait_type: "Rarity",
+            value: "Common"
+          },
+          {
+            trait_type: "Event Category", 
+            value: "Live Event"
+          }
+        ]
+      };
+
+      // Generate unique token ID for this ticket (this will be the actual token ID after minting)
+      const ticketMetadata = createEventTicketMetadata(event, defaultTicketMetadata, Date.now());
+
+      // Upload metadata to IPFS
+      const uploadNotificationId = notification.loading("Uploading ticket metadata...");
+      let metadataPath: string;
+      try {
+        const response = await fetch('/api/ipfs/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ticketMetadata),
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload metadata');
+        }
+        
+        const { path } = await response.json();
+        metadataPath = path;
+        notification.remove(uploadNotificationId);
+      } catch (error) {
+        notification.remove(uploadNotificationId);
+        console.error("Error uploading metadata:", error);
+        throw new Error('Failed to upload ticket metadata');
+      }
       
+      // Mint the ticket with the IPFS metadata
       await writeContractAsync({
         functionName: "mintTicket",
-        args: [BigInt(eventId), tokenUri],
-        value: parseEther(ticketPrice),
+        args: [BigInt(eventId), metadataPath],
+        // Send exact wei amount from contract state
+        value: BigInt(ticketPriceWei),
       });
 
       notification.remove(notificationId);
@@ -302,7 +353,7 @@ const Events: NextPage = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">🎫 Price:</span>
-                      <span>{event.ticketPrice} ETH</span>
+                      <span>{formatEther(BigInt(event.ticketPrice))} ETH</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">🎟️ Available:</span>

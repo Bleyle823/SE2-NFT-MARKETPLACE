@@ -49,6 +49,7 @@ const IpfsUpload: NextPage = () => {
   const [ticketMetadata, setTicketMetadata] = useState<TicketMetadataFormData>(getDefaultTicketMetadata());
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [generatedMetadata, setGeneratedMetadata] = useState<EventTicketMetadata | null>(null);
+  const [createdEventMetadata, setCreatedEventMetadata] = useState<Array<{type: string, ipfsHash: string}> | null>(null);
   
   const { writeContractAsync } = useScaffoldWriteContract({ contractName: "EventTicket" });
 
@@ -149,12 +150,13 @@ const IpfsUpload: NextPage = () => {
     }
 
     setLoading(true);
-    const notificationId = notification.loading("Creating event...");
     
     try {
+      // Step 1: Create the event on blockchain
+      const createEventNotificationId = notification.loading("Creating event on blockchain...");
       const eventDate = Math.floor(new Date(eventForm.eventDate).getTime() / 1000);
       
-      await writeContractAsync({
+      const txResult = await writeContractAsync({
         functionName: "createEvent",
         args: [
           eventForm.name,
@@ -167,8 +169,90 @@ const IpfsUpload: NextPage = () => {
         ],
       });
       
-      notification.remove(notificationId);
-      notification.success("Event created successfully!");
+      notification.remove(createEventNotificationId);
+      notification.success("Event created on blockchain!");
+
+      // Step 2: Generate and upload actual NFT ticket metadata
+      const metadataNotificationId = notification.loading("Creating NFT ticket metadata...");
+      
+      try {
+        // Create EventData object from form with actual event information
+        const eventData: EventData = {
+          eventId: 1, // This will be incremented by the contract, using 1 as placeholder
+          name: eventForm.name,
+          description: eventForm.description,
+          location: eventForm.location,
+          eventDate: eventDate,
+          ticketPrice: parseEther(eventForm.ticketPrice).toString(),
+          maxTickets: maxTicketsNum,
+          ticketsSold: 0,
+          organizer: connectedAddress || "",
+          isActive: true,
+          imageUri: eventForm.imageUri,
+        };
+
+        // Create actual ticket metadata for different ticket types
+        const ticketTypes = [
+          { type: "General Admission", section: "General", rarity: "Common" },
+          { type: "VIP", section: "VIP Section", rarity: "Rare" },
+          { type: "Premium", section: "Premium Section", rarity: "Epic" }
+        ];
+
+        const uploadedMetadata: Array<{type: string, ipfsHash: string}> = [];
+
+        for (const ticketType of ticketTypes) {
+          const ticketMetadataForm: TicketMetadataFormData = {
+            ticketType: ticketType.type,
+            seatNumber: "", // Will be assigned during minting
+            venueSection: ticketType.section,
+            customAttributes: [
+              {
+                trait_type: "Rarity",
+                value: ticketType.rarity,
+              },
+              {
+                trait_type: "Event Category",
+                value: "Live Event",
+              },
+              {
+                trait_type: "Created Date",
+                value: new Date().toISOString(),
+                display_type: "date"
+              }
+            ],
+          };
+
+          // Create actual NFT ticket metadata with real event data
+          const ticketMetadata = createEventTicketMetadata(eventData, ticketMetadataForm, 0);
+          
+          // Upload actual metadata to IPFS
+          const uploadedItem = await enhancedIPFS.uploadJSON(ticketMetadata);
+          
+          uploadedMetadata.push({
+            type: ticketType.type,
+            ipfsHash: uploadedItem.path
+          });
+        }
+
+        notification.remove(metadataNotificationId);
+        notification.success(`Event created and ${uploadedMetadata.length} NFT ticket metadata uploaded successfully!`);
+        
+        // Show detailed success information with IPFS hashes
+        const metadataDetails = uploadedMetadata.map(item => 
+          `${item.type}: ${item.ipfsHash.substring(0, 12)}...`
+        ).join(', ');
+        
+        notification.info(`NFT Metadata IPFS Hashes: ${metadataDetails}`);
+        
+        // Store metadata info for potential future use
+        setCreatedEventMetadata(uploadedMetadata);
+        console.log("Uploaded NFT Ticket Metadata:", uploadedMetadata);
+        
+      } catch (metadataError) {
+        notification.remove(metadataNotificationId);
+        notification.warning("Event created successfully, but NFT ticket metadata upload failed. You can create metadata manually later.");
+        console.error("NFT metadata creation error:", metadataError);
+      }
       
       // Reset form
       setEventForm({
@@ -180,8 +264,13 @@ const IpfsUpload: NextPage = () => {
         maxTickets: "100",
         imageUri: "",
       });
+      
+      // Clear image preview and metadata
+      setImageFile(null);
+      setImagePreview("");
+      setCreatedEventMetadata(null);
+      
     } catch (error) {
-      notification.remove(notificationId);
       notification.error("Error creating event");
       console.error(error);
     } finally {
@@ -490,15 +579,60 @@ const IpfsUpload: NextPage = () => {
                 </div>
               </div>
 
+              {/* Information about automatic metadata generation */}
+              <div className="alert alert-info mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                  <h3 className="font-bold">Automatic NFT Metadata Creation</h3>
+                  <div className="text-xs">When you create an event, actual NFT ticket metadata will be automatically generated with your event details and uploaded to IPFS for different ticket types (General Admission, VIP, Premium). This metadata includes all your event information, images, and attributes.</div>
+                </div>
+              </div>
+
               <div className="card-actions justify-end">
                 <button
                   className={`btn btn-primary ${loading ? "loading" : ""}`}
-                  disabled={loading}
+                  disabled={loading || !eventForm.imageUri}
                   onClick={handleCreateEvent}
                 >
-                  Create Event
+                  {loading ? "Creating Event & NFT Metadata..." : "Create Event"}
                 </button>
               </div>
+              
+              {!eventForm.imageUri && (
+                <div className="text-sm text-warning mt-2">
+                  ⚠️ Please upload an event image before creating the event
+                </div>
+              )}
+
+              {/* Show created metadata information */}
+              {createdEventMetadata && (
+                <div className="alert alert-success mt-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="font-bold">NFT Metadata Created Successfully!</h3>
+                    <div className="text-sm mt-2">
+                      <p className="mb-2">The following NFT ticket metadata has been uploaded to IPFS:</p>
+                      {createdEventMetadata.map((item, index) => (
+                        <div key={index} className="flex justify-between items-center mb-1">
+                          <span className="font-medium">{item.type}:</span>
+                          <a 
+                            href={`https://ipfs.io/ipfs/${item.ipfsHash}`} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="link link-primary text-xs font-mono"
+                          >
+                            {item.ipfsHash.substring(0, 20)}...
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
