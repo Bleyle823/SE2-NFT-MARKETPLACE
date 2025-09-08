@@ -70,9 +70,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
-      name: "Math",
+      name: "SafeCast",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Math__factory>;
+    ): Promise<Contracts.SafeCast__factory>;
     getContractFactory(
       name: "ReentrancyGuard",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -85,6 +85,10 @@ declare module "hardhat/types/runtime" {
       name: "EventTicket",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EventTicket__factory>;
+    getContractFactory(
+      name: "NFTMarketplace",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.NFTMarketplace__factory>;
     getContractFactory(
       name: "YourCollectible",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -161,10 +165,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
     getContractAt(
-      name: "Math",
+      name: "SafeCast",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.Math>;
+    ): Promise<Contracts.SafeCast>;
     getContractAt(
       name: "ReentrancyGuard",
       address: string | ethers.Addressable,
@@ -180,6 +184,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.EventTicket>;
+    getContractAt(
+      name: "NFTMarketplace",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.NFTMarketplace>;
     getContractAt(
       name: "YourCollectible",
       address: string | ethers.Addressable,
@@ -243,9 +252,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC165>;
     deployContract(
-      name: "Math",
+      name: "SafeCast",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Math>;
+    ): Promise<Contracts.SafeCast>;
     deployContract(
       name: "ReentrancyGuard",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -258,6 +267,10 @@ declare module "hardhat/types/runtime" {
       name: "EventTicket",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EventTicket>;
+    deployContract(
+      name: "NFTMarketplace",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.NFTMarketplace>;
     deployContract(
       name: "YourCollectible",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -334,10 +347,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC165>;
     deployContract(
-      name: "Math",
+      name: "SafeCast",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Math>;
+    ): Promise<Contracts.SafeCast>;
     deployContract(
       name: "ReentrancyGuard",
       args: any[],
@@ -353,6 +366,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EventTicket>;
+    deployContract(
+      name: "NFTMarketplace",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.NFTMarketplace>;
     deployContract(
       name: "YourCollectible",
       args: any[],

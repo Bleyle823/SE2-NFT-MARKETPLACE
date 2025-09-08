@@ -34,13 +34,15 @@ export type { ERC165 } from "./@openzeppelin/contracts/utils/introspection/ERC16
 export { ERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/ERC165__factory";
 export type { IERC165 } from "./@openzeppelin/contracts/utils/introspection/IERC165";
 export { IERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/IERC165__factory";
-export type { Math } from "./@openzeppelin/contracts/utils/math/Math";
-export { Math__factory } from "./factories/@openzeppelin/contracts/utils/math/Math__factory";
+export type { SafeCast } from "./@openzeppelin/contracts/utils/math/SafeCast";
+export { SafeCast__factory } from "./factories/@openzeppelin/contracts/utils/math/SafeCast__factory";
 export type { ReentrancyGuard } from "./@openzeppelin/contracts/utils/ReentrancyGuard";
 export { ReentrancyGuard__factory } from "./factories/@openzeppelin/contracts/utils/ReentrancyGuard__factory";
 export type { Strings } from "./@openzeppelin/contracts/utils/Strings";
 export { Strings__factory } from "./factories/@openzeppelin/contracts/utils/Strings__factory";
 export type { EventTicket } from "./contracts/EventTicket";
 export { EventTicket__factory } from "./factories/contracts/EventTicket__factory";
+export type { NFTMarketplace } from "./contracts/NFTMarketplace";
+export { NFTMarketplace__factory } from "./factories/contracts/NFTMarketplace__factory";
 export type { YourCollectible } from "./contracts/YourCollectible";
 export { YourCollectible__factory } from "./factories/contracts/YourCollectible__factory";

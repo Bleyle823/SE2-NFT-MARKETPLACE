@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export { EventTicket__factory } from "./EventTicket__factory";
+export { NFTMarketplace__factory } from "./NFTMarketplace__factory";
 export { YourCollectible__factory } from "./YourCollectible__factory";

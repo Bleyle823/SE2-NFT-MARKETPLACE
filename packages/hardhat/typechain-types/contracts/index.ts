@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { EventTicket } from "./EventTicket";
+export type { NFTMarketplace } from "./NFTMarketplace";
 export type { YourCollectible } from "./YourCollectible";
