@@ -3,8 +3,10 @@
 import { lazy, useEffect, useState } from "react";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
+import { parseEther } from "viem";
 import { notification } from "~~/utils/scaffold-eth";
 import { addToIPFS } from "~~/utils/simpleNFT/ipfs-fetch";
+import { enhancedIPFS } from "~~/utils/enhanced-ipfs";
 import { 
   EventTicketMetadata, 
   CreateEventFormData, 
@@ -59,48 +61,17 @@ const IpfsUpload: NextPage = () => {
     const notificationId = notification.loading("Uploading image to IPFS...");
     
     try {
-      // Convert file to base64 for IPFS upload
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          // Create a simple metadata object for the image
-          const imageMetadata = {
-            name: file.name,
-            description: `Event image: ${file.name}`,
-            image: reader.result as string,
-            attributes: [
-              {
-                trait_type: "File Type",
-                value: file.type,
-              },
-              {
-                trait_type: "File Size",
-                value: file.size,
-              },
-              {
-                trait_type: "Upload Date",
-                value: new Date().toISOString(),
-              },
-            ],
-          };
-          
-          const uploadedItem = await addToIPFS(imageMetadata);
-          notification.remove(notificationId);
-          notification.success("Image uploaded to IPFS successfully!");
-          
-          setEventForm(prev => ({ ...prev, imageUri: `https://ipfs.io/ipfs/${uploadedItem.path}` }));
-        } catch (error) {
-          notification.remove(notificationId);
-          notification.error("Error uploading image to IPFS");
-          console.error(error);
-        } finally {
-          setUploadingImage(false);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Use enhanced IPFS service for better reliability
+      const result = await enhancedIPFS.uploadFile(file);
+      
+      notification.remove(notificationId);
+      notification.success(`Image uploaded to IPFS successfully! ${enhancedIPFS.isPinataAvailable() ? '(via Pinata)' : '(via Infura)'}`);
+      
+      setEventForm(prev => ({ ...prev, imageUri: result.url }));
+      setUploadingImage(false);
     } catch (error) {
       notification.remove(notificationId);
-      notification.error("Error processing image");
+      notification.error("Error uploading image to IPFS");
       console.error(error);
       setUploadingImage(false);
     }
@@ -163,6 +134,20 @@ const IpfsUpload: NextPage = () => {
       return;
     }
 
+    // Additional validation for ticket price
+    const ticketPriceNum = parseFloat(eventForm.ticketPrice);
+    if (isNaN(ticketPriceNum) || ticketPriceNum < 0) {
+      notification.error("Please enter a valid ticket price");
+      return;
+    }
+
+    // Additional validation for max tickets
+    const maxTicketsNum = parseInt(eventForm.maxTickets);
+    if (isNaN(maxTicketsNum) || maxTicketsNum <= 0) {
+      notification.error("Please enter a valid number of maximum tickets");
+      return;
+    }
+
     setLoading(true);
     const notificationId = notification.loading("Creating event...");
     
@@ -176,8 +161,8 @@ const IpfsUpload: NextPage = () => {
           eventForm.description,
           eventForm.location,
           BigInt(eventDate),
-          eventForm.ticketPrice,
-          eventForm.maxTickets,
+          parseEther(eventForm.ticketPrice),
+          BigInt(eventForm.maxTickets),
           eventForm.imageUri,
         ],
       });
@@ -240,9 +225,9 @@ const IpfsUpload: NextPage = () => {
     const notificationId = notification.loading("Uploading to IPFS...");
     
     try {
-      const uploadedItem = await addToIPFS(generatedMetadata);
+      const uploadedItem = await enhancedIPFS.uploadJSON(generatedMetadata);
       notification.remove(notificationId);
-      notification.success("Uploaded to IPFS");
+      notification.success(`Uploaded to IPFS ${enhancedIPFS.isPinataAvailable() ? '(via Pinata)' : '(via Infura)'}`);
 
       setUploadedIpfsPath(uploadedItem.path);
     } catch (error) {
