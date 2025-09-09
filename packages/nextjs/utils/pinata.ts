@@ -99,3 +99,5 @@ export const getPinataUrl = (hash: string): string => {
 export const isPinataConfigured = (): boolean => {
   return !!(PINATA_API_KEY && PINATA_SECRET_KEY);
 };
+
+
