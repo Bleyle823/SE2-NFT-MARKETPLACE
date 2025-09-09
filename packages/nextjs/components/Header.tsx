@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
-import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
-import { ArrowDownTrayIcon, ArrowPathIcon, ArrowUpTrayIcon, PhotoIcon, CalendarDaysIcon, UserGroupIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, TicketIcon } from "@heroicons/react/24/outline";
+import { PhotoIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
 
@@ -22,39 +22,14 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/",
   },
   {
-    label: "Events",
+    label: "Event Tickets",
     href: "/events",
-    icon: <CalendarDaysIcon className="h-4 w-4" />,
+    icon: <TicketIcon className="h-4 w-4" />,
   },
   {
-    label: "Marketplace",
-    href: "/marketplace",
-    icon: <ShoppingCartIcon className="h-4 w-4" />,
-  },
-  {
-    label: "My Tickets",
-    href: "/myNFTs",
+    label: "ERC-721",
+    href: "/erc721",
     icon: <PhotoIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Create Event",
-    href: "/ipfsUpload",
-    icon: <ArrowUpTrayIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Organizer",
-    href: "/organizer",
-    icon: <UserGroupIcon className="h-4 w-4" />,
-  },
-  {
-    label: "Transfers",
-    href: "/transfers",
-    icon: <ArrowPathIcon className="h-4 w-4" />,
-  },
-  {
-    label: "IPFS Download",
-    href: "/ipfsDownload",
-    icon: <ArrowDownTrayIcon className="h-4 w-4" />,
   },
   {
     label: "Debug Contracts",
@@ -122,8 +97,8 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">SRE Challenges</span>
-            <span className="text-xs">Simple NFT Example</span>
+            <span className="font-bold leading-tight">Scaffold-ETH</span>
+            <span className="text-xs">Ethereum dev stack</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

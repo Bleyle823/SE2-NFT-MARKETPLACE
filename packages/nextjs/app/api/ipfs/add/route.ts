@@ -12,3 +12,5 @@ export async function POST(request: Request) {
     return Response.json({ error: "Error adding to ipfs" }, { status: 500 });
   }
 }
+
+
