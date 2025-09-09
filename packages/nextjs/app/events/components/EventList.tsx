@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatEther } from "viem";
+import { getIPFSUrl, createAndUploadTicketMetadata } from "~~/services/pinata";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface Event {
@@ -14,6 +15,7 @@ interface Event {
   soldTickets: bigint;
   organizer: string;
   isActive: boolean;
+  imageCID: string;
 }
 
 export const EventList = () => {
@@ -30,11 +32,42 @@ export const EventList = () => {
     try {
       setSelectedEventId(eventId);
       
-      await writeEventTicketNFTAsync({
+      // First, buy the ticket
+      const result = await writeEventTicketNFTAsync({
         functionName: "buyTicket",
         args: [eventId],
         value: ticketPrice,
       });
+
+      // Get the event details for metadata creation
+      const event = events?.find((e: Event) => e.id === eventId);
+      if (event && result) {
+        try {
+          // Create and upload ticket metadata to IPFS
+          const ticketNumber = (event.soldTickets + 1n).toString();
+          const eventData = {
+            name: event.name,
+            description: event.description,
+            eventDate: formatDate(event.eventDate),
+            ticketPrice: formatEther(event.ticketPrice),
+            maxSupply: event.maxSupply.toString(),
+            eventId: event.id.toString(),
+          };
+
+          const metadataCID = await createAndUploadTicketMetadata(
+            eventData,
+            event.imageCID,
+            ticketNumber
+          );
+
+          // Note: In a production app, you'd want to get the actual ticket ID from the transaction receipt
+          // and then update the metadata. For now, we'll skip this step as it requires more complex transaction handling
+          console.log("Ticket metadata uploaded to IPFS:", metadataCID);
+        } catch (metadataError) {
+          console.error("Error uploading ticket metadata:", metadataError);
+          // Don't fail the whole transaction for metadata issues
+        }
+      }
 
       refetchEvents();
       alert("Ticket purchased successfully!");
@@ -82,6 +115,15 @@ export const EventList = () => {
           
           return (
             <div key={event.id.toString()} className="card bg-base-100 shadow-xl">
+              {event.imageCID && (
+                <figure className="relative h-48">
+                  <img
+                    src={getIPFSUrl(event.imageCID)}
+                    alt={event.name}
+                    className="w-full h-full object-cover"
+                  />
+                </figure>
+              )}
               <div className="card-body">
                 <h3 className="card-title text-lg">{event.name}</h3>
                 <p className="text-sm text-gray-600 mb-2">{event.description}</p>

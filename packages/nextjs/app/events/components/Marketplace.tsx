@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatEther } from "viem";
 import { useAccount } from "wagmi";
+import { getIPFSUrl } from "~~/services/pinata";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 interface MarketplaceListing {
@@ -29,6 +30,7 @@ interface Event {
   soldTickets: bigint;
   organizer: string;
   isActive: boolean;
+  imageCID: string;
 }
 
 export const Marketplace = () => {
@@ -141,10 +143,24 @@ export const Marketplace = () => {
 
     return (
       <div className="card bg-base-100 shadow-xl">
+        {eventInfo?.imageCID && (
+          <figure className="relative h-32">
+            <img
+              src={getIPFSUrl(eventInfo.imageCID)}
+              alt={eventInfo.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-2 right-2">
+              <div className="badge badge-secondary">#{ticketInfo.ticketNumber.toString()}</div>
+            </div>
+          </figure>
+        )}
         <div className="card-body">
           <h3 className="card-title text-lg">
             {eventInfo?.name || "Loading..."}
-            <div className="badge badge-secondary">#{ticketInfo.ticketNumber.toString()}</div>
+            {!eventInfo?.imageCID && (
+              <div className="badge badge-secondary">#{ticketInfo.ticketNumber.toString()}</div>
+            )}
           </h3>
           
           {eventInfo && (

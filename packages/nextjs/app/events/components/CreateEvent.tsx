@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { parseEther } from "viem";
+import { ImageUpload } from "~~/components/ImageUpload";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 export const CreateEvent = () => {
@@ -14,6 +15,10 @@ export const CreateEvent = () => {
     maxSupply: "",
   });
 
+  const [imageCID, setImageCID] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [uploadError, setUploadError] = useState<string>("");
+
   const { writeContractAsync: writeEventTicketNFTAsync, isMining } = useScaffoldWriteContract("EventTicketNFT");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -24,10 +29,25 @@ export const CreateEvent = () => {
     }));
   };
 
+  const handleImageUploaded = (cid: string, url: string) => {
+    setImageCID(cid);
+    setImageUrl(url);
+    setUploadError("");
+  };
+
+  const handleUploadError = (error: string) => {
+    setUploadError(error);
+  };
+
   const handleCreateEvent = async () => {
     try {
       if (!eventData.name || !eventData.description || !eventData.eventDate || !eventData.eventTime || !eventData.ticketPrice || !eventData.maxSupply) {
         alert("Please fill in all fields");
+        return;
+      }
+
+      if (!imageCID) {
+        alert("Please upload an event image");
         return;
       }
 
@@ -49,6 +69,7 @@ export const CreateEvent = () => {
           BigInt(eventTimestamp),
           parseEther(eventData.ticketPrice),
           BigInt(eventData.maxSupply),
+          imageCID,
         ],
       });
 
@@ -61,6 +82,9 @@ export const CreateEvent = () => {
         ticketPrice: "",
         maxSupply: "",
       });
+      setImageCID("");
+      setImageUrl("");
+      setUploadError("");
 
       alert("Event created successfully!");
     } catch (error) {
@@ -74,6 +98,22 @@ export const CreateEvent = () => {
       <h2 className="text-3xl font-bold mb-6">Create New Event</h2>
       
       <div className="form-control w-full space-y-4">
+        <div>
+          <label className="label">
+            <span className="label-text font-semibold">Event Image</span>
+          </label>
+          <ImageUpload
+            onImageUploaded={handleImageUploaded}
+            onUploadError={handleUploadError}
+            className="mb-4"
+          />
+          {uploadError && (
+            <div className="alert alert-error mt-2">
+              <span>{uploadError}</span>
+            </div>
+          )}
+        </div>
+
         <div>
           <label className="label">
             <span className="label-text font-semibold">Event Name</span>
