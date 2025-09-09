@@ -137,7 +137,14 @@ export const MyHoldings = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {myAllTickets.map(ticket => (
-              <NFTCard nft={ticket} key={ticket.id} />
+              <NFTCard 
+                nft={ticket} 
+                key={ticket.id} 
+                onListSuccess={() => {
+                  // Force a refresh of the tickets after successful listing
+                  window.location.reload();
+                }}
+              />
             ))}
           </div>
         </div>

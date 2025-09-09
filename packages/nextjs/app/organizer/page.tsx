@@ -1,20 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { notification } from "~~/utils/scaffold-eth";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { useScaffoldReadContract, useScaffoldWriteContract, useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { RainbowKitCustomConnectButton, AddressInput } from "~~/components/scaffold-eth";
+import { IPFSImage } from "~~/components/IPFSImage";
 import { EventData } from "~~/utils/eventTicket/types";
+import { formatEther } from "viem";
+
+// Utility function to get a valid image URL with fallback
+const getValidImageUrl = (imageUri: string | undefined): string => {
+  if (!imageUri || imageUri.trim() === '') {
+    return '/placeholder-event.svg';
+  }
+  
+  // Check if it's a valid URL
+  try {
+    new URL(imageUri);
+    return imageUri;
+  } catch {
+    return '/placeholder-event.svg';
+  }
+};
 
 const OrganizerDashboard: NextPage = () => {
   const { address: connectedAddress, isConnected, isConnecting } = useAccount();
   const [myEvents, setMyEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(false);
   const [updatingEvent, setUpdatingEvent] = useState<number | null>(null);
+  const [newOrganizerAddress, setNewOrganizerAddress] = useState<string>("");
+  const [addingOrganizer, setAddingOrganizer] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState<{current: number, total: number} | null>(null);
+  const hasFetchedRef = useRef(false);
 
   const { writeContractAsync } = useScaffoldWriteContract({ contractName: "EventTicket" });
+  const { data: eventTicketContract } = useScaffoldContract({ contractName: "EventTicket" });
 
   const { data: eventIdCounter } = useScaffoldReadContract({
     contractName: "EventTicket",
@@ -29,56 +52,130 @@ const OrganizerDashboard: NextPage = () => {
     watch: true,
   });
 
+  const { data: contractOwner } = useScaffoldReadContract({
+    contractName: "EventTicket",
+    functionName: "owner",
+    watch: true,
+  });
+
+  // Reset fetch flag when eventIdCounter changes (new events added)
+  useEffect(() => {
+    hasFetchedRef.current = false;
+  }, [eventIdCounter]);
+
+  const fetchEventDataWithRetry = useCallback(async (eventId: number, maxRetries: number = 5): Promise<EventData | null> => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        if (!eventTicketContract) {
+          console.error("EventTicket contract not available");
+          return null;
+        }
+
+        // Fetch event data from the smart contract
+        const eventFromContract = await eventTicketContract.read.getEvent([BigInt(eventId)]);
+        
+        return {
+          eventId: Number(eventFromContract.eventId),
+          name: eventFromContract.name,
+          description: eventFromContract.description,
+          location: eventFromContract.location,
+          eventDate: Number(eventFromContract.eventDate),
+          // Store as ETH string for consistent UI usage
+          ticketPrice: formatEther(eventFromContract.ticketPrice),
+          maxTickets: Number(eventFromContract.maxTickets),
+          ticketsSold: Number(eventFromContract.ticketsSold),
+          organizer: eventFromContract.organizer,
+          isActive: eventFromContract.isActive,
+          imageUri: eventFromContract.imageUri,
+        };
+      } catch (error: any) {
+        console.error(`Error fetching event ${eventId} (attempt ${attempt}):`, error);
+        
+        // Handle rate limiting specifically with exponential backoff
+        if (error?.message?.includes('429') || 
+            error?.message?.includes('Too Many Requests') ||
+            error?.message?.includes('sepolia.base.org') ||
+            error?.message?.includes('over rate limit')) {
+          
+          if (attempt < maxRetries) {
+            // Exponential backoff with jitter: 1s, 2s, 4s, 8s, 16s
+            const baseDelay = Math.min(1000 * Math.pow(2, attempt - 1), 16000);
+            // Add jitter to prevent thundering herd (random 0-25% of base delay)
+            const jitter = Math.random() * 0.25 * baseDelay;
+            const delay = baseDelay + jitter;
+            
+            console.warn(`Rate limited while fetching event ${eventId}, retrying in ${Math.round(delay)}ms... (attempt ${attempt}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          } else {
+            console.error(`Max retries reached for event ${eventId} due to rate limiting`);
+            return null;
+          }
+        }
+        
+        // For other errors, don't retry
+        return null;
+      }
+    }
+    
+    return null;
+  }, [eventTicketContract]);
+
   useEffect(() => {
     const fetchMyEvents = async () => {
-      if (!eventIdCounter || !connectedAddress) return;
+      if (!eventIdCounter || !connectedAddress || !eventTicketContract || hasFetchedRef.current) return;
 
+      hasFetchedRef.current = true;
       setLoading(true);
       const eventsList: EventData[] = [];
       
       try {
-        // Fetch all events and filter by organizer
-        for (let i = 1; i <= Number(eventIdCounter); i++) {
-          const eventData = await fetchEventData(i);
-          if (eventData && eventData.organizer.toLowerCase() === connectedAddress.toLowerCase()) {
-            eventsList.push(eventData);
+        setError(null); // Clear any previous errors
+        // Fetch all events and filter by organizer with rate limiting
+        const totalEvents = Number(eventIdCounter);
+        let consecutiveFailures = 0;
+        const maxConsecutiveFailures = 3;
+        
+        for (let i = 1; i <= totalEvents; i++) {
+          setLoadingProgress({current: i, total: totalEvents});
+          
+          const eventData = await fetchEventDataWithRetry(i);
+          if (eventData) {
+            if (eventData.organizer.toLowerCase() === connectedAddress.toLowerCase()) {
+              eventsList.push(eventData);
+            }
+            consecutiveFailures = 0; // Reset failure counter on success
+          } else {
+            consecutiveFailures++;
+            
+            // Circuit breaker: if too many consecutive failures, stop fetching
+            if (consecutiveFailures >= maxConsecutiveFailures) {
+              console.warn(`Too many consecutive failures (${consecutiveFailures}), stopping event fetch to prevent further rate limiting`);
+              setError(`Some events could not be loaded due to network issues. ${eventsList.length} events loaded successfully.`);
+              break;
+            }
+          }
+          
+          // Add a longer delay between requests to prevent rate limiting
+          if (i < totalEvents) {
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
         }
         
         setMyEvents(eventsList);
       } catch (error) {
         console.error("Error fetching events:", error);
+        setError("Failed to load events. The server may be experiencing high traffic. Please try again in a moment.");
         notification.error("Error fetching events");
       } finally {
         setLoading(false);
+        setLoadingProgress(null);
       }
     };
 
     fetchMyEvents();
-  }, [eventIdCounter, connectedAddress]);
+  }, [eventIdCounter, connectedAddress, eventTicketContract, fetchEventDataWithRetry]);
 
-  const fetchEventData = async (eventId: number): Promise<EventData | null> => {
-    try {
-      // This would typically be done through contract calls
-      // For now, we'll create mock data
-      return {
-        eventId,
-        name: `My Event ${eventId}`,
-        description: `This is my event description for event ${eventId}`,
-        location: `My Location ${eventId}`,
-        eventDate: Math.floor(Date.now() / 1000) + (eventId * 86400),
-        ticketPrice: "0.1",
-        maxTickets: 100,
-        ticketsSold: Math.floor(Math.random() * 50),
-        organizer: connectedAddress || "",
-        isActive: true,
-        imageUri: `https://picsum.photos/400/300?random=${eventId}`,
-      };
-    } catch (error) {
-      console.error(`Error fetching event ${eventId}:`, error);
-      return null;
-    }
-  };
 
   const handleToggleEventStatus = async (eventId: number, currentStatus: boolean) => {
     setUpdatingEvent(eventId);
@@ -119,7 +216,36 @@ const OrganizerDashboard: NextPage = () => {
   };
 
   const getRevenue = (event: EventData) => {
-    return (parseFloat(event.ticketPrice) * event.ticketsSold).toFixed(4);
+    // ticketPrice is already an ETH string; multiply by tickets sold
+    const priceEth = parseFloat(event.ticketPrice || "0");
+    return (priceEth * event.ticketsSold).toFixed(4);
+  };
+
+  const handleAddOrganizer = async () => {
+    if (!newOrganizerAddress) {
+      notification.error("Please enter an address");
+      return;
+    }
+
+    setAddingOrganizer(true);
+    const notificationId = notification.loading("Adding organizer...");
+
+    try {
+      await writeContractAsync({
+        functionName: "addOrganizer",
+        args: [newOrganizerAddress as `0x${string}`],
+      });
+
+      notification.remove(notificationId);
+      notification.success("Organizer added successfully!");
+      setNewOrganizerAddress("");
+    } catch (error) {
+      notification.remove(notificationId);
+      notification.error("Error adding organizer");
+      console.error(error);
+    } finally {
+      setAddingOrganizer(false);
+    }
   };
 
   if (!isConnected || isConnecting) {
@@ -135,7 +261,10 @@ const OrganizerDashboard: NextPage = () => {
     );
   }
 
-  if (!isOrganizer) {
+  // Check if user is contract owner
+  const isOwner = contractOwner && connectedAddress && contractOwner.toLowerCase() === connectedAddress.toLowerCase();
+
+  if (!isOrganizer && !isOwner) {
     return (
       <div className="flex items-center flex-col flex-grow pt-10">
         <h1 className="text-center mb-4">
@@ -186,6 +315,39 @@ const OrganizerDashboard: NextPage = () => {
           </div>
         </div>
 
+        {/* Admin Section - Only for contract owner */}
+        {isOwner && (
+          <div className="card w-full max-w-md bg-base-100 shadow-xl mb-8">
+            <div className="card-body">
+              <h2 className="card-title text-warning">Admin Panel</h2>
+              <p className="text-sm text-base-content/70 mb-4">
+                Add new event organizers to the platform
+              </p>
+              
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Organizer Address</span>
+                </label>
+                <AddressInput
+                  value={newOrganizerAddress}
+                  onChange={setNewOrganizerAddress}
+                  placeholder="0x..."
+                />
+              </div>
+              
+              <div className="card-actions justify-end">
+                <button
+                  className={`btn btn-warning ${addingOrganizer ? "loading" : ""}`}
+                  disabled={addingOrganizer || !newOrganizerAddress}
+                  onClick={handleAddOrganizer}
+                >
+                  {addingOrganizer ? "Adding..." : "Add Organizer"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <div className="flex gap-4 mb-8">
           <a href="/ipfsUpload" className="btn btn-primary">
@@ -196,10 +358,47 @@ const OrganizerDashboard: NextPage = () => {
           </a>
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <div className="alert alert-error mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <h3 className="font-bold">Loading Error</h3>
+              <div className="text-xs">{error}</div>
+            </div>
+            <button 
+              className="btn btn-sm btn-outline"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Events List */}
         {loading ? (
-          <div className="flex justify-center items-center">
+          <div className="flex flex-col justify-center items-center space-y-4">
             <span className="loading loading-spinner loading-lg"></span>
+            <div className="text-center">
+              <p className="text-lg">Loading your events...</p>
+              {loadingProgress && (
+                <div className="mt-2">
+                  <div className="text-sm text-base-content/70">
+                    Loading event {loadingProgress.current} of {loadingProgress.total}
+                  </div>
+                  <progress 
+                    className="progress progress-primary w-64 mt-2" 
+                    value={loadingProgress.current} 
+                    max={loadingProgress.total}
+                  ></progress>
+                </div>
+              )}
+              <p className="text-xs text-base-content/50 mt-2">
+                This may take a moment due to network rate limiting...
+              </p>
+            </div>
           </div>
         ) : (
           <div className="w-full max-w-6xl px-4">
@@ -218,10 +417,11 @@ const OrganizerDashboard: NextPage = () => {
                 {myEvents.map((event) => (
                   <div key={event.eventId} className="card bg-base-100 shadow-xl">
                     <figure>
-                      <img 
-                        src={event.imageUri} 
+                      <IPFSImage
+                        src={event.imageUri || ''}
                         alt={event.name}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-48"
+                        fallbackSrc="/placeholder-event.svg"
                       />
                     </figure>
                     <div className="card-body">
