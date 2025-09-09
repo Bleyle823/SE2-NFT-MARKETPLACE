@@ -30,10 +30,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Errors__factory>;
     getContractFactory(
-      name: "IERC4906",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC4906__factory>;
-    getContractFactory(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721__factory>;
@@ -41,10 +37,6 @@ declare module "hardhat/types/runtime" {
       name: "ERC721Enumerable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721Enumerable__factory>;
-    getContractFactory(
-      name: "ERC721URIStorage",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC721URIStorage__factory>;
     getContractFactory(
       name: "IERC721Enumerable",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -82,13 +74,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Strings__factory>;
     getContractFactory(
-      name: "EventTicket",
+      name: "EventTicketNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.EventTicket__factory>;
+    ): Promise<Contracts.EventTicketNFT__factory>;
     getContractFactory(
-      name: "YourCollectible",
+      name: "SE2NFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.YourCollectible__factory>;
+    ): Promise<Contracts.SE2NFT__factory>;
 
     getContractAt(
       name: "Ownable",
@@ -111,11 +103,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC721Errors>;
     getContractAt(
-      name: "IERC4906",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IERC4906>;
-    getContractAt(
       name: "ERC721",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -125,11 +112,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC721Enumerable>;
-    getContractAt(
-      name: "ERC721URIStorage",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ERC721URIStorage>;
     getContractAt(
       name: "IERC721Enumerable",
       address: string | ethers.Addressable,
@@ -176,15 +158,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Strings>;
     getContractAt(
-      name: "EventTicket",
+      name: "EventTicketNFT",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.EventTicket>;
+    ): Promise<Contracts.EventTicketNFT>;
     getContractAt(
-      name: "YourCollectible",
+      name: "SE2NFT",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.YourCollectible>;
+    ): Promise<Contracts.SE2NFT>;
 
     deployContract(
       name: "Ownable",
@@ -203,10 +185,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC721Errors>;
     deployContract(
-      name: "IERC4906",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC4906>;
-    deployContract(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC721>;
@@ -214,10 +192,6 @@ declare module "hardhat/types/runtime" {
       name: "ERC721Enumerable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC721Enumerable>;
-    deployContract(
-      name: "ERC721URIStorage",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ERC721URIStorage>;
     deployContract(
       name: "IERC721Enumerable",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -255,13 +229,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
     deployContract(
-      name: "EventTicket",
+      name: "EventTicketNFT",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.EventTicket>;
+    ): Promise<Contracts.EventTicketNFT>;
     deployContract(
-      name: "YourCollectible",
+      name: "SE2NFT",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.YourCollectible>;
+    ): Promise<Contracts.SE2NFT>;
 
     deployContract(
       name: "Ownable",
@@ -284,11 +258,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC721Errors>;
     deployContract(
-      name: "IERC4906",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC4906>;
-    deployContract(
       name: "ERC721",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -298,11 +267,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC721Enumerable>;
-    deployContract(
-      name: "ERC721URIStorage",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ERC721URIStorage>;
     deployContract(
       name: "IERC721Enumerable",
       args: any[],
@@ -349,15 +313,15 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
     deployContract(
-      name: "EventTicket",
+      name: "EventTicketNFT",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.EventTicket>;
+    ): Promise<Contracts.EventTicketNFT>;
     deployContract(
-      name: "YourCollectible",
+      name: "SE2NFT",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.YourCollectible>;
+    ): Promise<Contracts.SE2NFT>;
 
     // default types
     getContractFactory(
