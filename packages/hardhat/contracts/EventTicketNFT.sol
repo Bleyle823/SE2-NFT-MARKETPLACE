@@ -24,6 +24,7 @@ contract EventTicketNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
         uint256 soldTickets;
         address organizer;
         bool isActive;
+        string imageCID; // IPFS CID for event image
     }
 
     struct Ticket {
@@ -63,7 +64,8 @@ contract EventTicketNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
         string memory _description,
         uint256 _eventDate,
         uint256 _ticketPrice,
-        uint256 _maxSupply
+        uint256 _maxSupply,
+        string memory _imageCID
     ) external returns (uint256) {
         require(_eventDate > block.timestamp, "Event date must be in the future");
         require(_ticketPrice > 0, "Ticket price must be greater than 0");
@@ -82,7 +84,8 @@ contract EventTicketNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
             maxSupply: _maxSupply,
             soldTickets: 0,
             organizer: msg.sender,
-            isActive: true
+            isActive: true,
+            imageCID: _imageCID
         });
 
         emit EventCreated(eventId, _name, msg.sender, _ticketPrice, _maxSupply);
@@ -106,12 +109,12 @@ contract EventTicketNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
         // Update event sold tickets
         eventInfo.soldTickets++;
 
-        // Create ticket
+        // Create ticket with temporary metadata URI - will be updated by frontend
         tickets[ticketId] = Ticket({
             id: ticketId,
             eventId: _eventId,
             ticketNumber: ticketNumber,
-            metadataURI: _generateMetadataURI(_eventId, ticketNumber)
+            metadataURI: ""
         });
 
         ticketToEvent[ticketId] = _eventId;
@@ -276,11 +279,28 @@ contract EventTicketNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @dev Update ticket metadata URI after IPFS upload
+     */
+    function updateTicketMetadata(uint256 _ticketId, string memory _metadataURI) external {
+        require(ownerOf(_ticketId) == msg.sender, "You don't own this ticket");
+        require(bytes(_metadataURI).length > 0, "Metadata URI cannot be empty");
+        
+        tickets[_ticketId].metadataURI = _metadataURI;
+    }
+
+    /**
      * @dev Override tokenURI to return ticket metadata
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
-        return tickets[tokenId].metadataURI;
+        
+        string memory metadataURI = tickets[tokenId].metadataURI;
+        if (bytes(metadataURI).length > 0) {
+            return string(abi.encodePacked("https://gateway.pinata.cloud/ipfs/", metadataURI));
+        }
+        
+        // Fallback to generated URI if no IPFS metadata is set
+        return _generateMetadataURI(tickets[tokenId].eventId, tickets[tokenId].ticketNumber);
     }
 
     /**

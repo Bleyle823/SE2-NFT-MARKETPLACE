@@ -632,8 +632,8 @@
       ]
     },
     "C:\\Users\\Omen\\Desktop\\scaffoldrovify\\packages\\hardhat\\contracts\\EventTicketNFT.sol": {
-      "lastModificationDate": 1757394111313,
-      "contentHash": "fbf516b6ff053169daf659adfc171d21",
+      "lastModificationDate": 1757395892539,
+      "contentHash": "e62347f392215d32543ab59fdb21267e",
       "sourceName": "contracts/EventTicketNFT.sol",
       "solcConfig": {
         "version": "0.8.20",
