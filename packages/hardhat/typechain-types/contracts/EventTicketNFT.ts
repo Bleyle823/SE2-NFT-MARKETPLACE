@@ -34,6 +34,7 @@ export declare namespace EventTicketNFT {
     soldTickets: BigNumberish;
     organizer: AddressLike;
     isActive: boolean;
+    imageCID: string;
   };
 
   export type EventStructOutput = [
@@ -45,7 +46,8 @@ export declare namespace EventTicketNFT {
     maxSupply: bigint,
     soldTickets: bigint,
     organizer: string,
-    isActive: boolean
+    isActive: boolean,
+    imageCID: string
   ] & {
     id: bigint;
     name: string;
@@ -56,6 +58,7 @@ export declare namespace EventTicketNFT {
     soldTickets: bigint;
     organizer: string;
     isActive: boolean;
+    imageCID: string;
   };
 
   export type MarketplaceListingStruct = {
@@ -132,6 +135,7 @@ export interface EventTicketNFTInterface extends Interface {
       | "totalSupply"
       | "transferFrom"
       | "transferOwnership"
+      | "updateTicketMetadata"
   ): FunctionFragment;
 
   getEvent(
@@ -169,7 +173,7 @@ export interface EventTicketNFTInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createEvent",
-    values: [string, string, BigNumberish, BigNumberish, BigNumberish]
+    values: [string, string, BigNumberish, BigNumberish, BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "deactivateEvent",
@@ -286,6 +290,10 @@ export interface EventTicketNFTInterface extends Interface {
     functionFragment: "transferOwnership",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "updateTicketMetadata",
+    values: [BigNumberish, string]
+  ): string;
 
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -394,6 +402,10 @@ export interface EventTicketNFTInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateTicketMetadata",
     data: BytesLike
   ): Result;
 }
@@ -649,7 +661,8 @@ export interface EventTicketNFT extends BaseContract {
       _description: string,
       _eventDate: BigNumberish,
       _ticketPrice: BigNumberish,
-      _maxSupply: BigNumberish
+      _maxSupply: BigNumberish,
+      _imageCID: string
     ],
     [bigint],
     "nonpayable"
@@ -675,7 +688,8 @@ export interface EventTicketNFT extends BaseContract {
         bigint,
         bigint,
         string,
-        boolean
+        boolean,
+        string
       ] & {
         id: bigint;
         name: string;
@@ -686,6 +700,7 @@ export interface EventTicketNFT extends BaseContract {
         soldTickets: bigint;
         organizer: string;
         isActive: boolean;
+        imageCID: string;
       }
     ],
     "view"
@@ -830,6 +845,12 @@ export interface EventTicketNFT extends BaseContract {
     "nonpayable"
   >;
 
+  updateTicketMetadata: TypedContractMethod<
+    [_ticketId: BigNumberish, _metadataURI: string],
+    [void],
+    "nonpayable"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -861,7 +882,8 @@ export interface EventTicketNFT extends BaseContract {
       _description: string,
       _eventDate: BigNumberish,
       _ticketPrice: BigNumberish,
-      _maxSupply: BigNumberish
+      _maxSupply: BigNumberish,
+      _imageCID: string
     ],
     [bigint],
     "nonpayable"
@@ -886,7 +908,8 @@ export interface EventTicketNFT extends BaseContract {
         bigint,
         bigint,
         string,
-        boolean
+        boolean,
+        string
       ] & {
         id: bigint;
         name: string;
@@ -897,6 +920,7 @@ export interface EventTicketNFT extends BaseContract {
         soldTickets: bigint;
         organizer: string;
         isActive: boolean;
+        imageCID: string;
       }
     ],
     "view"
@@ -1056,6 +1080,13 @@ export interface EventTicketNFT extends BaseContract {
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "updateTicketMetadata"
+  ): TypedContractMethod<
+    [_ticketId: BigNumberish, _metadataURI: string],
+    [void],
+    "nonpayable"
+  >;
 
   getEvent(
     key: "Approval"
