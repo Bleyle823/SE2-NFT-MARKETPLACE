@@ -1,12 +1,13 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
 import { ThemeProvider } from "~~/components/ThemeProvider";
+import { MarketplaceProvider } from "~~/contexts/MarketplaceContext";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
-  title: "Scaffold-ETH 2 App",
-  description: "Built with 🏗 Scaffold-ETH 2",
+  title: "Rovify Marketplace",
+  description: "NFT-powered event ticketing marketplace with anti-scalping protection",
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
@@ -14,7 +15,11 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
     <html suppressHydrationWarning className={``}>
       <body>
         <ThemeProvider enableSystem>
-          <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <ScaffoldEthAppWithProviders>
+            <MarketplaceProvider>
+              {children}
+            </MarketplaceProvider>
+          </ScaffoldEthAppWithProviders>
         </ThemeProvider>
       </body>
     </html>
