@@ -1,0 +1,1335 @@
+{
+  "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AccessControlBadConfirmation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "neededRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "AccessControlUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "AttendeeAlreadyCheckedIn",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "CheckInDisabled",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "EventNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidBatchSize",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidStatusTransition",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidTicketForEvent",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MaxAttendeesReached",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "RateLimitExceeded",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UnauthorizedTicketHolder",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "attendee",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "ticketId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "AttendeeCheckedIn",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "attendeeCount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "gasUsed",
+          "type": "uint256"
+        }
+      ],
+      "name": "BatchCheckInCompleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum EventManager.EventStatus",
+          "name": "oldStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum EventManager.EventStatus",
+          "name": "newStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "EventStatusChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "oldMax",
+          "type": "uint32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "newMax",
+          "type": "uint32"
+        }
+      ],
+      "name": "MaxAttendeesUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "EMERGENCY_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MIN_ACTION_INTERVAL",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "OPERATOR_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "attendeeCheckIns",
+      "outputs": [
+        {
+          "internalType": "uint128",
+          "name": "checkInTime",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "ticketId",
+          "type": "uint128"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "attendees",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "ticketIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "batchCheckIn",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "attendee",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "ticketId",
+          "type": "uint256"
+        }
+      ],
+      "name": "checkInAttendee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "completeEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "eventAttendees",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "eventStates",
+      "outputs": [
+        {
+          "internalType": "uint128",
+          "name": "attendeeCount",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint64",
+          "name": "statusChangeTime",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint32",
+          "name": "maxAttendees",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bool",
+          "name": "checkInEnabled",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAttendanceStats",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "attendeeCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxAttendees",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "attendanceRate",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "attendee",
+          "type": "address"
+        }
+      ],
+      "name": "getAttendeeCheckIn",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "checkInTime",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "ticketId",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct EventManager.CheckInData",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getEventAttendees",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getEventState",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "attendeeCount",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint64",
+              "name": "statusChangeTime",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint32",
+              "name": "maxAttendees",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint8",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bool",
+              "name": "checkInEnabled",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct EventManager.EventState",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint32",
+          "name": "maxAttendees",
+          "type": "uint32"
+        }
+      ],
+      "name": "initializeEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "attendee",
+          "type": "address"
+        }
+      ],
+      "name": "isAttendeeCheckedIn",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "lastActionTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "pauseEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "callerConfirmation",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "resumeEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        }
+      ],
+      "name": "startEvent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "eventId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint32",
+          "name": "newMaxAttendees",
+          "type": "uint32"
+        }
+      ],
+      "name": "updateMaxAttendees",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xe2527c19998b1d3c644489d9e083252c3ef57a380eeed2886ae9eb1450d88742",
+  "receipt": {
+    "to": null,
+    "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "contractAddress": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+    "transactionIndex": 0,
+    "gasUsed": "1629054",
+    "logsBloom": "0x00000004000000000000000000000000000000000000000000000000000000010200000000000000000000000040000000000000000000000000000000000000000000000000000000000000000000000002000010000000010000000010000000000000020000000000008100000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000001000000000000000000000000000200000000000000000000000002000000100000000000020000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x2c161659da2cb386d54a7882d2dde688175300b5f86172516b670c3201badd42",
+    "transactionHash": "0xe2527c19998b1d3c644489d9e083252c3ef57a380eeed2886ae9eb1450d88742",
+    "logs": [
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14,
+        "transactionHash": "0xe2527c19998b1d3c644489d9e083252c3ef57a380eeed2886ae9eb1450d88742",
+        "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+        ],
+        "data": "0x",
+        "logIndex": 0,
+        "blockHash": "0x2c161659da2cb386d54a7882d2dde688175300b5f86172516b670c3201badd42"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14,
+        "transactionHash": "0xe2527c19998b1d3c644489d9e083252c3ef57a380eeed2886ae9eb1450d88742",
+        "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0x97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b929",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+        ],
+        "data": "0x",
+        "logIndex": 1,
+        "blockHash": "0x2c161659da2cb386d54a7882d2dde688175300b5f86172516b670c3201badd42"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14,
+        "transactionHash": "0xe2527c19998b1d3c644489d9e083252c3ef57a380eeed2886ae9eb1450d88742",
+        "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0xbf233dd2aafeb4d50879c4aa5c81e96d92f6e6945c906a58f9f2d1c1631b4b26",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+        ],
+        "data": "0x",
+        "logIndex": 2,
+        "blockHash": "0x2c161659da2cb386d54a7882d2dde688175300b5f86172516b670c3201badd42"
+      }
+    ],
+    "blockNumber": 14,
+    "cumulativeGasUsed": "1629054",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "da624059f44b1d9ed0a6c8839a847890",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.30+commit.73712a01\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"AttendeeAlreadyCheckedIn\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"CheckInDisabled\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"EventNotFound\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidBatchSize\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidStatusTransition\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidTicketForEvent\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MaxAttendeesReached\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"RateLimitExceeded\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ReentrancyGuardReentrantCall\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UnauthorizedTicketHolder\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"attendee\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ticketId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"AttendeeCheckedIn\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"attendeeCount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"gasUsed\",\"type\":\"uint256\"}],\"name\":\"BatchCheckInCompleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"enum EventManager.EventStatus\",\"name\":\"oldStatus\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"enum EventManager.EventStatus\",\"name\":\"newStatus\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"EventStatusChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint32\",\"name\":\"oldMax\",\"type\":\"uint32\"},{\"indexed\":false,\"internalType\":\"uint32\",\"name\":\"newMax\",\"type\":\"uint32\"}],\"name\":\"MaxAttendeesUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"EMERGENCY_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MIN_ACTION_INTERVAL\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"OPERATOR_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"attendeeCheckIns\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"checkInTime\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"ticketId\",\"type\":\"uint128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"internalType\":\"address[]\",\"name\":\"attendees\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"ticketIds\",\"type\":\"uint256[]\"}],\"name\":\"batchCheckIn\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"cancelEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"attendee\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ticketId\",\"type\":\"uint256\"}],\"name\":\"checkInAttendee\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"completeEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"eventAttendees\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"eventStates\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"attendeeCount\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"statusChangeTime\",\"type\":\"uint64\"},{\"internalType\":\"uint32\",\"name\":\"maxAttendees\",\"type\":\"uint32\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"checkInEnabled\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"getAttendanceStats\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"attendeeCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxAttendees\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"attendanceRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"attendee\",\"type\":\"address\"}],\"name\":\"getAttendeeCheckIn\",\"outputs\":[{\"components\":[{\"internalType\":\"uint128\",\"name\":\"checkInTime\",\"type\":\"uint128\"},{\"internalType\":\"uint128\",\"name\":\"ticketId\",\"type\":\"uint128\"}],\"internalType\":\"struct EventManager.CheckInData\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"getEventAttendees\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"getEventState\",\"outputs\":[{\"components\":[{\"internalType\":\"uint128\",\"name\":\"attendeeCount\",\"type\":\"uint128\"},{\"internalType\":\"uint64\",\"name\":\"statusChangeTime\",\"type\":\"uint64\"},{\"internalType\":\"uint32\",\"name\":\"maxAttendees\",\"type\":\"uint32\"},{\"internalType\":\"uint8\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"checkInEnabled\",\"type\":\"bool\"}],\"internalType\":\"struct EventManager.EventState\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"maxAttendees\",\"type\":\"uint32\"}],\"name\":\"initializeEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"attendee\",\"type\":\"address\"}],\"name\":\"isAttendeeCheckedIn\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"lastActionTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"pauseEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"resumeEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"}],\"name\":\"startEvent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"eventId\",\"type\":\"uint256\"},{\"internalType\":\"uint32\",\"name\":\"newMaxAttendees\",\"type\":\"uint32\"}],\"name\":\"updateMaxAttendees\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"event lifecycle mgmnt\",\"errors\":{\"AccessControlBadConfirmation()\":[{\"details\":\"The caller of a function is not the expected one. NOTE: Don't confuse with {AccessControlUnauthorizedAccount}.\"}],\"AccessControlUnauthorizedAccount(address,bytes32)\":[{\"details\":\"The `account` is missing a role.\"}],\"ReentrancyGuardReentrantCall()\":[{\"details\":\"Unauthorized reentrant call.\"}]},\"events\":{\"RoleAdminChanged(bytes32,bytes32,bytes32)\":{\"details\":\"Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted signaling this.\"},\"RoleGranted(bytes32,address,address)\":{\"details\":\"Emitted when `account` is granted `role`. `sender` is the account that originated the contract call, an admin role bearer except when using {AccessControl-_setupRole}.\"},\"RoleRevoked(bytes32,address,address)\":{\"details\":\"Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call:   - if using `revokeRole`, it is the admin role bearer   - if using `renounceRole`, it is the role bearer (i.e. `account`)\"}},\"kind\":\"dev\",\"methods\":{\"batchCheckIn(uint256,address[],uint256[])\":{\"details\":\"Batch check-in for efficient mass processing\",\"params\":{\"attendees\":\"Array of attendee addresses\",\"eventId\":\"Event ID\",\"ticketIds\":\"Array of corresponding ticket IDs\"}},\"cancelEvent(uint256)\":{\"details\":\"Cancel event (emergency or creator decision)\",\"params\":{\"eventId\":\"Event to cancel\"}},\"checkInAttendee(uint256,address,uint256)\":{\"details\":\"Check in single attendee with QR code verification\",\"params\":{\"attendee\":\"Attendee address\",\"eventId\":\"Event ID\",\"ticketId\":\"NFT ticket ID for verification\"}},\"completeEvent(uint256)\":{\"details\":\"Complete event and finalize attendance\",\"params\":{\"eventId\":\"Event to complete\"}},\"getAttendanceStats(uint256)\":{\"details\":\"Get event attendance statistics\",\"params\":{\"eventId\":\"Event ID\"},\"returns\":{\"attendanceRate\":\"Percentage (basis points)\",\"attendeeCount\":\"Current attendees\",\"maxAttendees\":\"Maximum allowed\"}},\"getAttendeeCheckIn(uint256,address)\":{\"details\":\"Get attendee check-in data\",\"params\":{\"attendee\":\"Attendee address\",\"eventId\":\"Event ID\"},\"returns\":{\"_0\":\"Check-in data struct\"}},\"getEventAttendees(uint256)\":{\"details\":\"Get all checked-in attendees for an event\",\"params\":{\"eventId\":\"Event ID\"},\"returns\":{\"_0\":\"Array of attendee addresses\"}},\"getEventState(uint256)\":{\"details\":\"Get complete event state\",\"params\":{\"eventId\":\"Event ID\"},\"returns\":{\"_0\":\"Event state struct\"}},\"getRoleAdmin(bytes32)\":{\"details\":\"Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.\"},\"grantRole(bytes32,address)\":{\"details\":\"Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event.\"},\"hasRole(bytes32,address)\":{\"details\":\"Returns `true` if `account` has been granted `role`.\"},\"initializeEvent(uint256,uint32)\":{\"details\":\"Initialize event state when created by EventFactory\",\"params\":{\"eventId\":\"Unique event identifier\",\"maxAttendees\":\"Maximum number of attendees allowed\"}},\"isAttendeeCheckedIn(uint256,address)\":{\"details\":\"Check if attendee is checked in\",\"params\":{\"attendee\":\"Attendee address\",\"eventId\":\"Event ID\"},\"returns\":{\"_0\":\"True if checked in\"}},\"pauseEvent(uint256)\":{\"details\":\"Pause event (emergency scenarios)\",\"params\":{\"eventId\":\"Event to pause\"}},\"renounceRole(bytes32,address)\":{\"details\":\"Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event.\"},\"resumeEvent(uint256)\":{\"details\":\"Resume paused event\",\"params\":{\"eventId\":\"Event to resume\"}},\"revokeRole(bytes32,address)\":{\"details\":\"Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event.\"},\"startEvent(uint256)\":{\"details\":\"Start event and enable check-ins\",\"params\":{\"eventId\":\"Event to start\"}},\"supportsInterface(bytes4)\":{\"details\":\"See {IERC165-supportsInterface}.\"},\"updateMaxAttendees(uint256,uint32)\":{\"details\":\"Update maximum attendees (before event starts)\",\"params\":{\"eventId\":\"Event ID\",\"newMaxAttendees\":\"New maximum attendee count\"}}},\"title\":\"EventManager\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Handles event status transitions, check-ins, and real-time attendee tracking\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/platform/events/EventManager.sol\":\"EventManager\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[],\"viaIR\":true},\"sources\":{\"@openzeppelin/contracts/access/AccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (access/AccessControl.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {IAccessControl} from \\\"./IAccessControl.sol\\\";\\nimport {Context} from \\\"../utils/Context.sol\\\";\\nimport {ERC165} from \\\"../utils/introspection/ERC165.sol\\\";\\n\\n/**\\n * @dev Contract module that allows children to implement role-based access\\n * control mechanisms. This is a lightweight version that doesn't allow enumerating role\\n * members except through off-chain means by accessing the contract event logs. Some\\n * applications may benefit from on-chain enumerability, for those cases see\\n * {AccessControlEnumerable}.\\n *\\n * Roles are referred to by their `bytes32` identifier. These should be exposed\\n * in the external API and be unique. The best way to achieve this is by\\n * using `public constant` hash digests:\\n *\\n * ```solidity\\n * bytes32 public constant MY_ROLE = keccak256(\\\"MY_ROLE\\\");\\n * ```\\n *\\n * Roles can be used to represent a set of permissions. To restrict access to a\\n * function call, use {hasRole}:\\n *\\n * ```solidity\\n * function foo() public {\\n *     require(hasRole(MY_ROLE, msg.sender));\\n *     ...\\n * }\\n * ```\\n *\\n * Roles can be granted and revoked dynamically via the {grantRole} and\\n * {revokeRole} functions. Each role has an associated admin role, and only\\n * accounts that have a role's admin role can call {grantRole} and {revokeRole}.\\n *\\n * By default, the admin role for all roles is `DEFAULT_ADMIN_ROLE`, which means\\n * that only accounts with this role will be able to grant or revoke other\\n * roles. More complex role relationships can be created by using\\n * {_setRoleAdmin}.\\n *\\n * WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin: it has permission to\\n * grant and revoke this role. Extra precautions should be taken to secure\\n * accounts that have been granted it. We recommend using {AccessControlDefaultAdminRules}\\n * to enforce additional security measures for this role.\\n */\\nabstract contract AccessControl is Context, IAccessControl, ERC165 {\\n    struct RoleData {\\n        mapping(address account => bool) hasRole;\\n        bytes32 adminRole;\\n    }\\n\\n    mapping(bytes32 role => RoleData) private _roles;\\n\\n    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;\\n\\n    /**\\n     * @dev Modifier that checks that an account has a specific role. Reverts\\n     * with an {AccessControlUnauthorizedAccount} error including the required role.\\n     */\\n    modifier onlyRole(bytes32 role) {\\n        _checkRole(role);\\n        _;\\n    }\\n\\n    /**\\n     * @dev See {IERC165-supportsInterface}.\\n     */\\n    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {\\n        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);\\n    }\\n\\n    /**\\n     * @dev Returns `true` if `account` has been granted `role`.\\n     */\\n    function hasRole(bytes32 role, address account) public view virtual returns (bool) {\\n        return _roles[role].hasRole[account];\\n    }\\n\\n    /**\\n     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `_msgSender()`\\n     * is missing `role`. Overriding this function changes the behavior of the {onlyRole} modifier.\\n     */\\n    function _checkRole(bytes32 role) internal view virtual {\\n        _checkRole(role, _msgSender());\\n    }\\n\\n    /**\\n     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `account`\\n     * is missing `role`.\\n     */\\n    function _checkRole(bytes32 role, address account) internal view virtual {\\n        if (!hasRole(role, account)) {\\n            revert AccessControlUnauthorizedAccount(account, role);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the admin role that controls `role`. See {grantRole} and\\n     * {revokeRole}.\\n     *\\n     * To change a role's admin, use {_setRoleAdmin}.\\n     */\\n    function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {\\n        return _roles[role].adminRole;\\n    }\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     *\\n     * May emit a {RoleGranted} event.\\n     */\\n    function grantRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from `account`.\\n     *\\n     * If `account` had been granted `role`, emits a {RoleRevoked} event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     *\\n     * May emit a {RoleRevoked} event.\\n     */\\n    function revokeRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from the calling account.\\n     *\\n     * Roles are often managed via {grantRole} and {revokeRole}: this function's\\n     * purpose is to provide a mechanism for accounts to lose their privileges\\n     * if they are compromised (such as when a trusted device is misplaced).\\n     *\\n     * If the calling account had been revoked `role`, emits a {RoleRevoked}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must be `callerConfirmation`.\\n     *\\n     * May emit a {RoleRevoked} event.\\n     */\\n    function renounceRole(bytes32 role, address callerConfirmation) public virtual {\\n        if (callerConfirmation != _msgSender()) {\\n            revert AccessControlBadConfirmation();\\n        }\\n\\n        _revokeRole(role, callerConfirmation);\\n    }\\n\\n    /**\\n     * @dev Sets `adminRole` as ``role``'s admin role.\\n     *\\n     * Emits a {RoleAdminChanged} event.\\n     */\\n    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {\\n        bytes32 previousAdminRole = getRoleAdmin(role);\\n        _roles[role].adminRole = adminRole;\\n        emit RoleAdminChanged(role, previousAdminRole, adminRole);\\n    }\\n\\n    /**\\n     * @dev Attempts to grant `role` to `account` and returns a boolean indicating if `role` was granted.\\n     *\\n     * Internal function without access restriction.\\n     *\\n     * May emit a {RoleGranted} event.\\n     */\\n    function _grantRole(bytes32 role, address account) internal virtual returns (bool) {\\n        if (!hasRole(role, account)) {\\n            _roles[role].hasRole[account] = true;\\n            emit RoleGranted(role, account, _msgSender());\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Attempts to revoke `role` to `account` and returns a boolean indicating if `role` was revoked.\\n     *\\n     * Internal function without access restriction.\\n     *\\n     * May emit a {RoleRevoked} event.\\n     */\\n    function _revokeRole(bytes32 role, address account) internal virtual returns (bool) {\\n        if (hasRole(role, account)) {\\n            _roles[role].hasRole[account] = false;\\n            emit RoleRevoked(role, account, _msgSender());\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xa0e92d42942f4f57c5be50568dac11e9d00c93efcb458026e18d2d9b9b2e7308\",\"license\":\"MIT\"},\"@openzeppelin/contracts/access/IAccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (access/IAccessControl.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev External interface of AccessControl declared to support ERC165 detection.\\n */\\ninterface IAccessControl {\\n    /**\\n     * @dev The `account` is missing a role.\\n     */\\n    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);\\n\\n    /**\\n     * @dev The caller of a function is not the expected one.\\n     *\\n     * NOTE: Don't confuse with {AccessControlUnauthorizedAccount}.\\n     */\\n    error AccessControlBadConfirmation();\\n\\n    /**\\n     * @dev Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`\\n     *\\n     * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite\\n     * {RoleAdminChanged} not being emitted signaling this.\\n     */\\n    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);\\n\\n    /**\\n     * @dev Emitted when `account` is granted `role`.\\n     *\\n     * `sender` is the account that originated the contract call, an admin role\\n     * bearer except when using {AccessControl-_setupRole}.\\n     */\\n    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    /**\\n     * @dev Emitted when `account` is revoked `role`.\\n     *\\n     * `sender` is the account that originated the contract call:\\n     *   - if using `revokeRole`, it is the admin role bearer\\n     *   - if using `renounceRole`, it is the role bearer (i.e. `account`)\\n     */\\n    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    /**\\n     * @dev Returns `true` if `account` has been granted `role`.\\n     */\\n    function hasRole(bytes32 role, address account) external view returns (bool);\\n\\n    /**\\n     * @dev Returns the admin role that controls `role`. See {grantRole} and\\n     * {revokeRole}.\\n     *\\n     * To change a role's admin, use {AccessControl-_setRoleAdmin}.\\n     */\\n    function getRoleAdmin(bytes32 role) external view returns (bytes32);\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function grantRole(bytes32 role, address account) external;\\n\\n    /**\\n     * @dev Revokes `role` from `account`.\\n     *\\n     * If `account` had been granted `role`, emits a {RoleRevoked} event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function revokeRole(bytes32 role, address account) external;\\n\\n    /**\\n     * @dev Revokes `role` from the calling account.\\n     *\\n     * Roles are often managed via {grantRole} and {revokeRole}: this function's\\n     * purpose is to provide a mechanism for accounts to lose their privileges\\n     * if they are compromised (such as when a trusted device is misplaced).\\n     *\\n     * If the calling account had been granted `role`, emits a {RoleRevoked}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must be `callerConfirmation`.\\n     */\\n    function renounceRole(bytes32 role, address callerConfirmation) external;\\n}\\n\",\"keccak256\":\"0xb6b36edd6a2999fd243ff226d6cbf84bd71af2432bbd0dfe19392996a1d9cb41\",\"license\":\"MIT\"},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (token/ERC721/IERC721.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {IERC165} from \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC721 compliant contract.\\n */\\ninterface IERC721 is IERC165 {\\n    /**\\n     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);\\n\\n    /**\\n     * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.\\n     */\\n    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);\\n\\n    /**\\n     * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.\\n     */\\n    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Returns the number of tokens in ``owner``'s account.\\n     */\\n    function balanceOf(address owner) external view returns (uint256 balance);\\n\\n    /**\\n     * @dev Returns the owner of the `tokenId` token.\\n     *\\n     * Requirements:\\n     *\\n     * - `tokenId` must exist.\\n     */\\n    function ownerOf(uint256 tokenId) external view returns (address owner);\\n\\n    /**\\n     * @dev Safely transfers `tokenId` token from `from` to `to`.\\n     *\\n     * Requirements:\\n     *\\n     * - `from` cannot be the zero address.\\n     * - `to` cannot be the zero address.\\n     * - `tokenId` token must exist and be owned by `from`.\\n     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.\\n     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon\\n     *   a safe transfer.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;\\n\\n    /**\\n     * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients\\n     * are aware of the ERC721 protocol to prevent tokens from being forever locked.\\n     *\\n     * Requirements:\\n     *\\n     * - `from` cannot be the zero address.\\n     * - `to` cannot be the zero address.\\n     * - `tokenId` token must exist and be owned by `from`.\\n     * - If the caller is not `from`, it must have been allowed to move this token by either {approve} or\\n     *   {setApprovalForAll}.\\n     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon\\n     *   a safe transfer.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function safeTransferFrom(address from, address to, uint256 tokenId) external;\\n\\n    /**\\n     * @dev Transfers `tokenId` token from `from` to `to`.\\n     *\\n     * WARNING: Note that the caller is responsible to confirm that the recipient is capable of receiving ERC721\\n     * or else they may be permanently lost. Usage of {safeTransferFrom} prevents loss, though the caller must\\n     * understand this adds an external call which potentially creates a reentrancy vulnerability.\\n     *\\n     * Requirements:\\n     *\\n     * - `from` cannot be the zero address.\\n     * - `to` cannot be the zero address.\\n     * - `tokenId` token must be owned by `from`.\\n     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(address from, address to, uint256 tokenId) external;\\n\\n    /**\\n     * @dev Gives permission to `to` to transfer `tokenId` token to another account.\\n     * The approval is cleared when the token is transferred.\\n     *\\n     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.\\n     *\\n     * Requirements:\\n     *\\n     * - The caller must own the token or be an approved operator.\\n     * - `tokenId` must exist.\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address to, uint256 tokenId) external;\\n\\n    /**\\n     * @dev Approve or remove `operator` as an operator for the caller.\\n     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.\\n     *\\n     * Requirements:\\n     *\\n     * - The `operator` cannot be the address zero.\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     */\\n    function setApprovalForAll(address operator, bool approved) external;\\n\\n    /**\\n     * @dev Returns the account approved for `tokenId` token.\\n     *\\n     * Requirements:\\n     *\\n     * - `tokenId` must exist.\\n     */\\n    function getApproved(uint256 tokenId) external view returns (address operator);\\n\\n    /**\\n     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.\\n     *\\n     * See {setApprovalForAll}\\n     */\\n    function isApprovedForAll(address owner, address operator) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x5ef46daa3b58ef2702279d514780316efaa952915ee1aa3396f041ee2982b0b4\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n\\n    function _contextSuffixLength() internal view virtual returns (uint256) {\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/ReentrancyGuard.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/ReentrancyGuard.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Contract module that helps prevent reentrant calls to a function.\\n *\\n * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier\\n * available, which can be applied to functions to make sure there are no nested\\n * (reentrant) calls to them.\\n *\\n * Note that because there is a single `nonReentrant` guard, functions marked as\\n * `nonReentrant` may not call one another. This can be worked around by making\\n * those functions `private`, and then adding `external` `nonReentrant` entry\\n * points to them.\\n *\\n * TIP: If you would like to learn more about reentrancy and alternative ways\\n * to protect against it, check out our blog post\\n * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].\\n */\\nabstract contract ReentrancyGuard {\\n    // Booleans are more expensive than uint256 or any type that takes up a full\\n    // word because each write operation emits an extra SLOAD to first read the\\n    // slot's contents, replace the bits taken up by the boolean, and then write\\n    // back. This is the compiler's defense against contract upgrades and\\n    // pointer aliasing, and it cannot be disabled.\\n\\n    // The values being non-zero value makes deployment a bit more expensive,\\n    // but in exchange the refund on every call to nonReentrant will be lower in\\n    // amount. Since refunds are capped to a percentage of the total\\n    // transaction's gas, it is best to keep them low in cases like this one, to\\n    // increase the likelihood of the full refund coming into effect.\\n    uint256 private constant NOT_ENTERED = 1;\\n    uint256 private constant ENTERED = 2;\\n\\n    uint256 private _status;\\n\\n    /**\\n     * @dev Unauthorized reentrant call.\\n     */\\n    error ReentrancyGuardReentrantCall();\\n\\n    constructor() {\\n        _status = NOT_ENTERED;\\n    }\\n\\n    /**\\n     * @dev Prevents a contract from calling itself, directly or indirectly.\\n     * Calling a `nonReentrant` function from another `nonReentrant`\\n     * function is not supported. It is possible to prevent this from happening\\n     * by making the `nonReentrant` function external, and making it call a\\n     * `private` function that does the actual work.\\n     */\\n    modifier nonReentrant() {\\n        _nonReentrantBefore();\\n        _;\\n        _nonReentrantAfter();\\n    }\\n\\n    function _nonReentrantBefore() private {\\n        // On the first call to nonReentrant, _status will be NOT_ENTERED\\n        if (_status == ENTERED) {\\n            revert ReentrancyGuardReentrantCall();\\n        }\\n\\n        // Any calls to nonReentrant after this point will fail\\n        _status = ENTERED;\\n    }\\n\\n    function _nonReentrantAfter() private {\\n        // By storing the original value once again, a refund is triggered (see\\n        // https://eips.ethereum.org/EIPS/eip-2200)\\n        _status = NOT_ENTERED;\\n    }\\n\\n    /**\\n     * @dev Returns true if the reentrancy guard is currently set to \\\"entered\\\", which indicates there is a\\n     * `nonReentrant` function in the call stack.\\n     */\\n    function _reentrancyGuardEntered() internal view returns (bool) {\\n        return _status == ENTERED;\\n    }\\n}\\n\",\"keccak256\":\"0xf980daa263b661ab8ddee7d4fd833c7da7e7995e2c359ff1f17e67e4112f2236\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/ERC165.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {IERC165} from \\\"./IERC165.sol\\\";\\n\\n/**\\n * @dev Implementation of the {IERC165} interface.\\n *\\n * Contracts that want to implement ERC165 should inherit from this contract and override {supportsInterface} to check\\n * for the additional interface id that will be supported. For example:\\n *\\n * ```solidity\\n * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {\\n *     return interfaceId == type(MyInterface).interfaceId || super.supportsInterface(interfaceId);\\n * }\\n * ```\\n */\\nabstract contract ERC165 is IERC165 {\\n    /**\\n     * @dev See {IERC165-supportsInterface}.\\n     */\\n    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {\\n        return interfaceId == type(IERC165).interfaceId;\\n    }\\n}\\n\",\"keccak256\":\"0x9e8778b14317ba9e256c30a76fd6c32b960af621987f56069e1e819c77c6a133\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/introspection/IERC165.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x4296879f55019b23e135000eb36896057e7101fb7fb859c5ef690cf14643757b\",\"license\":\"MIT\"},\"contracts/interfaces/nft/ITicketNFT.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity ^0.8.30;\\r\\n\\r\\nimport \\\"@openzeppelin/contracts/token/ERC721/IERC721.sol\\\";\\r\\n\\r\\n/**\\r\\n * @title IEventTicketNFT\\r\\n * @dev Interface for event ticket NFTs\\r\\n */\\r\\ninterface IEventTicketNFT is IERC721 {\\r\\n    struct TicketMetadata {\\r\\n        uint256 eventId;\\r\\n        address originalPurchaser;\\r\\n        uint256 purchaseTime;\\r\\n        uint256 seatNumber;\\r\\n        string ticketType;\\r\\n        bool isTransferable;\\r\\n        bool isUsed;\\r\\n    }\\r\\n\\r\\n    event TicketMinted(uint256 indexed tokenId, uint256 indexed eventId, address indexed recipient, string ticketType);\\r\\n\\r\\n    event TicketUsed(uint256 indexed tokenId, uint256 indexed eventId, address indexed user);\\r\\n\\r\\n    function mintTicket(\\r\\n        address to,\\r\\n        uint256 eventId,\\r\\n        string calldata ticketType,\\r\\n        bool isTransferable\\r\\n    ) external returns (uint256 tokenId);\\r\\n\\r\\n    function useTicket(uint256 tokenId) external;\\r\\n    function getTicketMetadata(uint256 tokenId) external view returns (TicketMetadata memory);\\r\\n    function getEventTickets(uint256 eventId) external view returns (uint256[] memory);\\r\\n    function setTicketTransferability(uint256 tokenId, bool transferable) external;\\r\\n}\\r\\n\",\"keccak256\":\"0x6647171c5011e9c1d93e1f9b341b6f1902c8c5aecae3ad2433c894a6c145dfe0\",\"license\":\"MIT\"},\"contracts/interfaces/platform/IEventManagement.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity ^0.8.30;\\r\\n\\r\\n/**\\r\\n * @title IEventManagement\\r\\n * @dev Interface for event management contracts\\r\\n */\\r\\ninterface IEventFactory {\\r\\n    struct EventParams {\\r\\n        string name;\\r\\n        string description;\\r\\n        string imageUrl;\\r\\n        string location;\\r\\n        uint256 startTime;\\r\\n        uint256 endTime;\\r\\n        uint256 ticketPrice;\\r\\n        uint256 maxAttendees;\\r\\n        bool isVirtual;\\r\\n        string[] tags;\\r\\n    }\\r\\n\\r\\n    event EventCreated(\\r\\n        uint256 indexed eventId,\\r\\n        address indexed creator,\\r\\n        string name,\\r\\n        uint256 startTime,\\r\\n        uint256 ticketPrice\\r\\n    );\\r\\n\\r\\n    function createEvent(EventParams calldata params) external returns (uint256 eventId);\\r\\n    function getEvent(uint256 eventId) external view returns (EventParams memory);\\r\\n    function getCreatorEvents(address creator) external view returns (uint256[] memory);\\r\\n    function updateEvent(uint256 eventId, EventParams calldata params) external;\\r\\n    function cancelEvent(uint256 eventId) external;\\r\\n}\\r\\n\\r\\ninterface IEventManager {\\r\\n    enum EventStatus {\\r\\n        Created,\\r\\n        Active,\\r\\n        Paused,\\r\\n        Cancelled,\\r\\n        Completed\\r\\n    }\\r\\n\\r\\n    event EventStatusChanged(uint256 indexed eventId, EventStatus newStatus);\\r\\n    event AttendeeCheckedIn(uint256 indexed eventId, address indexed attendee, uint256 ticketId);\\r\\n\\r\\n    function startEvent(uint256 eventId) external;\\r\\n    function pauseEvent(uint256 eventId) external;\\r\\n    function completeEvent(uint256 eventId) external;\\r\\n    function checkInAttendee(uint256 eventId, address attendee, uint256 ticketId) external;\\r\\n    function getEventStatus(uint256 eventId) external view returns (EventStatus);\\r\\n    function getEventAttendees(uint256 eventId) external view returns (address[] memory);\\r\\n}\\r\\n\\r\\ninterface ITicketSales {\\r\\n    struct SaleParams {\\r\\n        uint256 eventId;\\r\\n        uint256 price;\\r\\n        uint256 maxSupply;\\r\\n        uint256 maxPerWallet;\\r\\n        uint256 saleStart;\\r\\n        uint256 saleEnd;\\r\\n        bool whitelistOnly;\\r\\n    }\\r\\n\\r\\n    event TicketSaleConfigured(uint256 indexed eventId, uint256 price, uint256 maxSupply);\\r\\n    event TicketPurchased(uint256 indexed eventId, address indexed buyer, uint256 quantity, uint256 totalCost);\\r\\n\\r\\n    function configureSale(SaleParams calldata params) external;\\r\\n    function purchaseTickets(uint256 eventId, uint256 quantity) external payable;\\r\\n    function purchaseWithRVFY(uint256 eventId, uint256 quantity) external;\\r\\n    function getSaleInfo(uint256 eventId) external view returns (SaleParams memory);\\r\\n    function getTicketsSold(uint256 eventId) external view returns (uint256);\\r\\n}\\r\\n\",\"keccak256\":\"0xaa516022c8c2ed92f66281df7e74e2b1973f546b8a0f6451a54eaf3500f90fde\",\"license\":\"MIT\"},\"contracts/platform/events/EventManager.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\r\\npragma solidity 0.8.30;\\r\\n\\r\\nimport \\\"@openzeppelin/contracts/access/AccessControl.sol\\\";\\r\\nimport \\\"@openzeppelin/contracts/utils/ReentrancyGuard.sol\\\";\\r\\nimport \\\"../../interfaces/platform/IEventManagement.sol\\\";\\r\\nimport \\\"../../interfaces/nft/ITicketNFT.sol\\\";\\r\\n\\r\\n/**\\r\\n * @title EventManager\\r\\n * @dev event lifecycle mgmnt\\r\\n * @notice Handles event status transitions, check-ins, and real-time attendee tracking\\r\\n */\\r\\ncontract EventManager is AccessControl, ReentrancyGuard {\\r\\n    bytes32 public constant OPERATOR_ROLE = keccak256(\\\"OPERATOR_ROLE\\\");\\r\\n    bytes32 public constant EMERGENCY_ROLE = keccak256(\\\"EMERGENCY_ROLE\\\");\\r\\n\\r\\n    enum EventStatus {\\r\\n        Created,\\r\\n        Active,\\r\\n        Paused,\\r\\n        Cancelled,\\r\\n        Completed\\r\\n    }\\r\\n\\r\\n    struct EventState {\\r\\n        uint128 attendeeCount; // Current checked-in attendees\\r\\n        uint64 statusChangeTime; // Last status change timestamp\\r\\n        uint32 maxAttendees; // Maximum allowed attendees\\r\\n        uint8 status; // EventStatus enum (0-4)\\r\\n        bool checkInEnabled; // Check-in functionality toggle\\r\\n        // Slot 1: 16 + 8 + 4 + 1 + 1 = 30 bytes (2 bytes unused)\\r\\n    }\\r\\n\\r\\n    struct CheckInData {\\r\\n        uint128 checkInTime; // When attendee checked in\\r\\n        uint128 ticketId; // Associated ticket NFT ID\\r\\n        // Slot 1: 16 + 16 = 32 bytes (perfect slot utilization)\\r\\n    }\\r\\n\\r\\n    // Mappings\\r\\n    mapping(uint256 => EventState) public eventStates;\\r\\n    mapping(uint256 => mapping(address => CheckInData)) public attendeeCheckIns;\\r\\n    mapping(uint256 => address[]) public eventAttendees;\\r\\n\\r\\n    // Rate limiting for anti-bot protection\\r\\n    mapping(address => uint256) public lastActionTime;\\r\\n    uint256 public constant MIN_ACTION_INTERVAL = 2 seconds;\\r\\n\\r\\n    // Events\\r\\n    event EventStatusChanged(uint256 indexed eventId, EventStatus oldStatus, EventStatus newStatus, address operator);\\r\\n    event AttendeeCheckedIn(\\r\\n        uint256 indexed eventId,\\r\\n        address indexed attendee,\\r\\n        uint256 indexed ticketId,\\r\\n        uint256 timestamp\\r\\n    );\\r\\n    event BatchCheckInCompleted(uint256 indexed eventId, uint256 attendeeCount, uint256 gasUsed);\\r\\n    event MaxAttendeesUpdated(uint256 indexed eventId, uint32 oldMax, uint32 newMax);\\r\\n\\r\\n    error EventNotFound();\\r\\n    error InvalidStatusTransition();\\r\\n    error CheckInDisabled();\\r\\n    error MaxAttendeesReached();\\r\\n    error AttendeeAlreadyCheckedIn();\\r\\n    error InvalidTicketForEvent();\\r\\n    error UnauthorizedTicketHolder();\\r\\n    error RateLimitExceeded();\\r\\n    error InvalidBatchSize();\\r\\n\\r\\n    constructor(address admin) {\\r\\n        _grantRole(DEFAULT_ADMIN_ROLE, admin);\\r\\n        _grantRole(OPERATOR_ROLE, admin);\\r\\n        _grantRole(EMERGENCY_ROLE, admin);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Initialize event state when created by EventFactory\\r\\n     * @param eventId Unique event identifier\\r\\n     * @param maxAttendees Maximum number of attendees allowed\\r\\n     */\\r\\n    function initializeEvent(uint256 eventId, uint32 maxAttendees) external onlyRole(OPERATOR_ROLE) {\\r\\n        require(eventStates[eventId].statusChangeTime == 0, \\\"Event already initialized\\\");\\r\\n\\r\\n        eventStates[eventId] = EventState({\\r\\n            attendeeCount: 0,\\r\\n            statusChangeTime: uint64(block.timestamp),\\r\\n            maxAttendees: maxAttendees,\\r\\n            status: uint8(EventStatus.Created),\\r\\n            checkInEnabled: false\\r\\n        });\\r\\n\\r\\n        emit EventStatusChanged(eventId, EventStatus.Created, EventStatus.Created, msg.sender);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Start event and enable check-ins\\r\\n     * @param eventId Event to start\\r\\n     */\\r\\n    function startEvent(uint256 eventId) external onlyRole(OPERATOR_ROLE) {\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.statusChangeTime != 0, \\\"Event not found\\\");\\r\\n        require(state.status == uint8(EventStatus.Created), \\\"Invalid status transition\\\");\\r\\n\\r\\n        uint256 gasStart = gasleft();\\r\\n\\r\\n        unchecked {\\r\\n            state.status = uint8(EventStatus.Active);\\r\\n            state.statusChangeTime = uint64(block.timestamp);\\r\\n            state.checkInEnabled = true;\\r\\n        }\\r\\n\\r\\n        uint256 gasUsed = gasStart - gasleft();\\r\\n        emit EventStatusChanged(eventId, EventStatus.Created, EventStatus.Active, msg.sender);\\r\\n\\r\\n        // Gas optimization tracking for continuous improvement\\r\\n        if (gasUsed > 50000) {\\r\\n            // Log for optimization review if gas usage is high\\r\\n            emit BatchCheckInCompleted(eventId, 0, gasUsed);\\r\\n        }\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Pause event (emergency scenarios)\\r\\n     * @param eventId Event to pause\\r\\n     */\\r\\n    function pauseEvent(uint256 eventId) external onlyRole(EMERGENCY_ROLE) {\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.status == uint8(EventStatus.Active), \\\"Can only pause active events\\\");\\r\\n\\r\\n        unchecked {\\r\\n            state.status = uint8(EventStatus.Paused);\\r\\n            state.statusChangeTime = uint64(block.timestamp);\\r\\n            state.checkInEnabled = false;\\r\\n        }\\r\\n\\r\\n        emit EventStatusChanged(eventId, EventStatus.Active, EventStatus.Paused, msg.sender);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Resume paused event\\r\\n     * @param eventId Event to resume\\r\\n     */\\r\\n    function resumeEvent(uint256 eventId) external onlyRole(OPERATOR_ROLE) {\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.status == uint8(EventStatus.Paused), \\\"Can only resume paused events\\\");\\r\\n\\r\\n        unchecked {\\r\\n            state.status = uint8(EventStatus.Active);\\r\\n            state.statusChangeTime = uint64(block.timestamp);\\r\\n            state.checkInEnabled = true;\\r\\n        }\\r\\n\\r\\n        emit EventStatusChanged(eventId, EventStatus.Paused, EventStatus.Active, msg.sender);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Complete event and finalize attendance\\r\\n     * @param eventId Event to complete\\r\\n     */\\r\\n    function completeEvent(uint256 eventId) external onlyRole(OPERATOR_ROLE) {\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(\\r\\n            state.status == uint8(EventStatus.Active) || state.status == uint8(EventStatus.Paused),\\r\\n            \\\"Invalid status for completion\\\"\\r\\n        );\\r\\n\\r\\n        unchecked {\\r\\n            state.status = uint8(EventStatus.Completed);\\r\\n            state.statusChangeTime = uint64(block.timestamp);\\r\\n            state.checkInEnabled = false;\\r\\n        }\\r\\n\\r\\n        emit EventStatusChanged(eventId, EventStatus(state.status), EventStatus.Completed, msg.sender);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Cancel event (emergency or creator decision)\\r\\n     * @param eventId Event to cancel\\r\\n     */\\r\\n    function cancelEvent(uint256 eventId) external onlyRole(EMERGENCY_ROLE) {\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.status != uint8(EventStatus.Completed), \\\"Cannot cancel completed event\\\");\\r\\n        require(state.status != uint8(EventStatus.Cancelled), \\\"Event already cancelled\\\");\\r\\n\\r\\n        EventStatus oldStatus = EventStatus(state.status);\\r\\n\\r\\n        unchecked {\\r\\n            state.status = uint8(EventStatus.Cancelled);\\r\\n            state.statusChangeTime = uint64(block.timestamp);\\r\\n            state.checkInEnabled = false;\\r\\n        }\\r\\n\\r\\n        emit EventStatusChanged(eventId, oldStatus, EventStatus.Cancelled, msg.sender);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Check in single attendee with QR code verification\\r\\n     * @param eventId Event ID\\r\\n     * @param attendee Attendee address\\r\\n     * @param ticketId NFT ticket ID for verification\\r\\n     */\\r\\n    function checkInAttendee(\\r\\n        uint256 eventId,\\r\\n        address attendee,\\r\\n        uint256 ticketId\\r\\n    ) external onlyRole(OPERATOR_ROLE) nonReentrant {\\r\\n        // Rate limiting protection\\r\\n        require(block.timestamp >= lastActionTime[msg.sender] + MIN_ACTION_INTERVAL, \\\"Rate limit exceeded\\\");\\r\\n        lastActionTime[msg.sender] = block.timestamp;\\r\\n\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.checkInEnabled, \\\"Check-in disabled\\\");\\r\\n        require(state.attendeeCount < state.maxAttendees, \\\"Max attendees reached\\\");\\r\\n        require(attendeeCheckIns[eventId][attendee].checkInTime == 0, \\\"Already checked in\\\");\\r\\n\\r\\n        // Verify ticket ownership and validity\\r\\n        // TODO: Integrate with TicketNFT contract for verification\\r\\n        // ITicketNFT ticketContract = ITicketNFT(ticketNFTAddress);\\r\\n        // require(ticketContract.ownerOf(ticketId) == attendee, \\\"Invalid ticket holder\\\");\\r\\n        // require(ticketContract.getEventId(ticketId) == eventId, \\\"Ticket not for this event\\\");\\r\\n\\r\\n        uint256 gasStart = gasleft();\\r\\n\\r\\n        // Update state\\r\\n        unchecked {\\r\\n            state.attendeeCount += 1;\\r\\n            attendeeCheckIns[eventId][attendee] = CheckInData({\\r\\n                checkInTime: uint128(block.timestamp),\\r\\n                ticketId: uint128(ticketId)\\r\\n            });\\r\\n        }\\r\\n\\r\\n        eventAttendees[eventId].push(attendee);\\r\\n\\r\\n        uint256 gasUsed = gasStart - gasleft();\\r\\n        emit AttendeeCheckedIn(eventId, attendee, ticketId, block.timestamp);\\r\\n\\r\\n        // Track gas usage for optimization\\r\\n        if (gasUsed > 35000) {\\r\\n            emit BatchCheckInCompleted(eventId, 1, gasUsed);\\r\\n        }\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Batch check-in for efficient mass processing\\r\\n     * @param eventId Event ID\\r\\n     * @param attendees Array of attendee addresses\\r\\n     * @param ticketIds Array of corresponding ticket IDs\\r\\n     */\\r\\n    function batchCheckIn(\\r\\n        uint256 eventId,\\r\\n        address[] calldata attendees,\\r\\n        uint256[] calldata ticketIds\\r\\n    ) external onlyRole(OPERATOR_ROLE) nonReentrant {\\r\\n        require(attendees.length == ticketIds.length, \\\"Array length mismatch\\\");\\r\\n        require(attendees.length <= 50, \\\"Batch too large\\\"); // Gas limit protection\\r\\n        require(attendees.length > 0, \\\"Empty batch\\\");\\r\\n\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.checkInEnabled, \\\"Check-in disabled\\\");\\r\\n\\r\\n        uint256 gasStart = gasleft();\\r\\n        uint256 successfulCheckIns = 0;\\r\\n\\r\\n        for (uint256 i = 0; i < attendees.length; ) {\\r\\n            address attendee = attendees[i];\\r\\n            uint256 ticketId = ticketIds[i];\\r\\n\\r\\n            // Skip if already checked in or invalid\\r\\n            if (attendeeCheckIns[eventId][attendee].checkInTime == 0 && state.attendeeCount < state.maxAttendees) {\\r\\n                unchecked {\\r\\n                    state.attendeeCount += 1;\\r\\n                    attendeeCheckIns[eventId][attendee] = CheckInData({\\r\\n                        checkInTime: uint128(block.timestamp),\\r\\n                        ticketId: uint128(ticketId)\\r\\n                    });\\r\\n                    successfulCheckIns += 1;\\r\\n                }\\r\\n\\r\\n                eventAttendees[eventId].push(attendee);\\r\\n                emit AttendeeCheckedIn(eventId, attendee, ticketId, block.timestamp);\\r\\n            }\\r\\n\\r\\n            unchecked {\\r\\n                ++i;\\r\\n            }\\r\\n        }\\r\\n\\r\\n        uint256 gasUsed = gasStart - gasleft();\\r\\n        emit BatchCheckInCompleted(eventId, successfulCheckIns, gasUsed);\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Update maximum attendees (before event starts)\\r\\n     * @param eventId Event ID\\r\\n     * @param newMaxAttendees New maximum attendee count\\r\\n     */\\r\\n    function updateMaxAttendees(uint256 eventId, uint32 newMaxAttendees) external onlyRole(OPERATOR_ROLE) {\\r\\n        EventState storage state = eventStates[eventId];\\r\\n        require(state.status == uint8(EventStatus.Created), \\\"Can only update before event starts\\\");\\r\\n        require(newMaxAttendees >= state.attendeeCount, \\\"Cannot set below current attendance\\\");\\r\\n\\r\\n        uint32 oldMax = state.maxAttendees;\\r\\n        state.maxAttendees = newMaxAttendees;\\r\\n\\r\\n        emit MaxAttendeesUpdated(eventId, oldMax, newMaxAttendees);\\r\\n    }\\r\\n\\r\\n    // VIEW FUNCTIONS\\r\\n\\r\\n    /**\\r\\n     * @dev Get complete event state\\r\\n     * @param eventId Event ID\\r\\n     * @return Event state struct\\r\\n     */\\r\\n    function getEventState(uint256 eventId) external view returns (EventState memory) {\\r\\n        return eventStates[eventId];\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Get attendee check-in data\\r\\n     * @param eventId Event ID\\r\\n     * @param attendee Attendee address\\r\\n     * @return Check-in data struct\\r\\n     */\\r\\n    function getAttendeeCheckIn(uint256 eventId, address attendee) external view returns (CheckInData memory) {\\r\\n        return attendeeCheckIns[eventId][attendee];\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Get all checked-in attendees for an event\\r\\n     * @param eventId Event ID\\r\\n     * @return Array of attendee addresses\\r\\n     */\\r\\n    function getEventAttendees(uint256 eventId) external view returns (address[] memory) {\\r\\n        return eventAttendees[eventId];\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Check if attendee is checked in\\r\\n     * @param eventId Event ID\\r\\n     * @param attendee Attendee address\\r\\n     * @return True if checked in\\r\\n     */\\r\\n    function isAttendeeCheckedIn(uint256 eventId, address attendee) external view returns (bool) {\\r\\n        return attendeeCheckIns[eventId][attendee].checkInTime > 0;\\r\\n    }\\r\\n\\r\\n    /**\\r\\n     * @dev Get event attendance statistics\\r\\n     * @param eventId Event ID\\r\\n     * @return attendeeCount Current attendees\\r\\n     * @return maxAttendees Maximum allowed\\r\\n     * @return attendanceRate Percentage (basis points)\\r\\n     */\\r\\n    function getAttendanceStats(\\r\\n        uint256 eventId\\r\\n    ) external view returns (uint256 attendeeCount, uint256 maxAttendees, uint256 attendanceRate) {\\r\\n        EventState memory state = eventStates[eventId];\\r\\n        attendeeCount = state.attendeeCount;\\r\\n        maxAttendees = state.maxAttendees;\\r\\n\\r\\n        if (maxAttendees > 0) {\\r\\n            unchecked {\\r\\n                attendanceRate = (attendeeCount * 10000) / maxAttendees;\\r\\n            }\\r\\n        }\\r\\n    }\\r\\n}\\r\\n\",\"keccak256\":\"0x982d3bbf2f4bfceefa3fa612c44aec6ef9d3c9723feff6e2692ab251ee78d273\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60803461008057601f611d5b38819003918201601f19168301916001600160401b038311848410176100855780849260209460405283398101031261008057516001600160a01b03811681036100805761007090600180556100608161009b565b5061006a81610117565b506101af565b50604051611a9390816102488239f35b600080fd5b634e487b7160e01b600052604160045260246000fd5b6001600160a01b0381166000908152600080516020611d3b833981519152602052604090205460ff16610111576001600160a01b03166000818152600080516020611d3b83398151915260205260408120805460ff19166001179055339190600080516020611cdb8339815191528180a4600190565b50600090565b6001600160a01b0381166000908152600080516020611cfb833981519152602052604090205460ff16610111576001600160a01b03166000818152600080516020611cfb83398151915260205260408120805460ff191660011790553391907f97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b92990600080516020611cdb8339815191529080a4600190565b6001600160a01b0381166000908152600080516020611d1b833981519152602052604090205460ff16610111576001600160a01b03166000818152600080516020611d1b83398151915260205260408120805460ff191660011790553391907fbf233dd2aafeb4d50879c4aa5c81e96d92f6e6945c906a58f9f2d1c1631b4b2690600080516020611cdb8339815191529080a460019056fe608080604052600436101561001357600080fd5b60003560e01c90816301ffc9a7146115cf575080630b871eba146114fa578063110a33161461141f57806320df4359146113e4578063248a9ca3146113af57806327f0bfd6146113715780632f2ff15d1461133157806336568abe146112eb5780633f69babd146111b55780634f9876931461114657806356e5d4bd1461112a5780635940c150146110a45780638fdd082114610daa57806391d1485414610d5d5780639b7aea7514610c59578063a217fddf14610c3d578063a59a695314610ad2578063ad395c14146109ea578063afb9730c14610997578063b220f33d146108d2578063bd92d1eb1461087a578063c1ba956814610703578063d547741f146106bc578063d769473314610401578063e46f8415146102b9578063e5fc78c4146101e5578063f5b541a6146101aa5763fb690d591461015357600080fd5b346101a55760403660031901126101a5576024356004356000526004602052604060002080548210156101a55760209161018c9161168b565b905460405160039290921b1c6001600160a01b03168152f35b600080fd5b346101a55760003660031901126101a55760206040517f97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b9298152f35b346101a55760203660031901126101a5576000608060405161020681611731565b8281528260208201528260408201528260608201520152600435600052600260205260a060406000206040519061023c82611731565b5460ff6001600160801b0382169283815263ffffffff602082016001600160401b038560801c1681526001600160401b036040840191838760c01c1683528560806060870196828a60e01c168852019760e81c16151587526040519788525116602087015251166040850152511660608301525115156080820152f35b346101a5576102c736611668565b6102cf611861565b816000526002602052604060002090815460ff8160e01c166103b05763ffffffff82166001600160801b038216811061035f57835463ffffffff60c01b191660c09390931b63ffffffff60c01b16929092179092557ff70fccdc5af71fe4c42f217c6761972d9775eedfec44ed9f02eaeae85c60ea609160409163ffffffff83519260c01c1682526020820152a2005b60405162461bcd60e51b815260206004820152602360248201527f43616e6e6f74207365742062656c6f772063757272656e7420617474656e64616044820152626e636560e81b6064820152608490fd5b60405162461bcd60e51b815260206004820152602360248201527f43616e206f6e6c7920757064617465206265666f7265206576656e742073746160448201526272747360e81b6064820152608490fd5b346101a55760603660031901126101a55760043561041d611622565b604435610428611861565b610430611a1b565b336000526005602052604060002054600281018091116106a657421061066b57336000526005602052426040600020558260005260026020526040600020805461047f60ff8260e81c1661174c565b63ffffffff6001600160801b0382169160c01c1681101561062e57846000526003602052604060002060018060a01b0385166000526020526001600160801b03604060002054166105f457610572916001600160801b038060015a940116166001600160801b03198254161790556040516104f981611716565b426001600160801b039081168252848116602080840191825260008981526003825260408082206001600160a01b038b16835283528082209551935160801b6fffffffffffffffffffffffffffffffff191693909416929092179093558781526004909252902061056b90859061179c565b5a906117e2565b60405142815290926001600160a01b03169084907fdf345647e2c3fd49c2f0b2c0eb16dc4d90df72e8bb497e6e2942fd7b9089611390602090a46188b881116105bc575b60018055005b60407f053d4c08fc986e3c0791fe75c516877e7f59dae0677200ec4a079d4722c8d8ad91815190600182526020820152a280806105b6565b60405162461bcd60e51b815260206004820152601260248201527120b63932b0b23c9031b432b1b5b2b21034b760711b6044820152606490fd5b60405162461bcd60e51b815260206004820152601560248201527413585e08185d1d195b9919595cc81c995858da1959605a1b6044820152606490fd5b60405162461bcd60e51b815260206004820152601360248201527214985d19481b1a5b5a5d08195e18d959591959606a1b6044820152606490fd5b634e487b7160e01b600052601160045260246000fd5b346101a55760403660031901126101a5576107016004356106db611622565b906106fc6106f782600052600060205260016040600020015490565b6118d3565b611999565b005b346101a55761071136611668565b610719611861565b8160005260026020526001600160401b0360406000205460801c16610835576040519061074582611731565b6000825260208201906001600160401b034216825263ffffffff60408401911681526107de63ffffffff6060850192600084526107be6001600160401b036080880196600088528960005260026020526001600160801b038060406000209a5116166001600160801b03198a54161789555116876116b9565b51855463ffffffff60c01b1916911660c01b63ffffffff60c01b16178455565b518254915161ffff60e01b1990921660e09190911b60ff60e01b161790151560e81b60ff60e81b1617905560408051600080825260208201523391810191909152600080516020611a3e83398151915290606090a2005b60405162461bcd60e51b815260206004820152601960248201527f4576656e7420616c726561647920696e697469616c697a6564000000000000006044820152606490fd5b346101a55760403660031901126101a557610893611622565b600435600052600360205260406000209060018060a01b0316600052602052604080600020548151906001600160801b038116825260801c6020820152f35b346101a55760203660031901126101a5576000600435600052600260205260406000206040519061090282611731565b54916001600160801b038316918281526001600160401b038460801c166020820152608060ff63ffffffff8660c01c1695866040850152818160e01c16606085015260e81c1615159101528215801561096c575b5060609260405192835260208301526040820152f35b90506109815761271081028290046060610956565b634e487b7160e01b600052601260045260246000fd5b346101a55760403660031901126101a5576109b0611622565b600435600052600360205260406000209060018060a01b031660005260205260206001600160801b03604060002054161515604051908152f35b346101a55760203660031901126101a55760043560005260046020526040600020604051908160208254918281520190819260005260206000209060005b818110610ab357505050829003601f01601f191682016001600160401b03811183821017610a9d57604081815260208083528451908301819052919283929183019160005b818110610a7b575050500390f35b82516001600160a01b0316845285945060209384019390920191600101610a6d565b634e487b7160e01b600052604160045260246000fd5b82546001600160a01b0316845260209093019260019283019201610a28565b346101a55760203660031901126101a557600435610aee611861565b806000526002602052604060002080546001600160401b038160801c1615610c065760e01c60ff16610bc157610b5c905a815460ff60e01b1916600160e01b17825590610b44426001600160401b0316826116b9565b805460ff60e81b1916600160e81b1790555a906117e2565b81600080516020611a3e83398151915260606040516000815260016020820152336040820152a261c3508111610b8e57005b60407f053d4c08fc986e3c0791fe75c516877e7f59dae0677200ec4a079d4722c8d8ad91815190600082526020820152a2005b60405162461bcd60e51b815260206004820152601960248201527f496e76616c696420737461747573207472616e736974696f6e000000000000006044820152606490fd5b60405162461bcd60e51b815260206004820152600f60248201526e115d995b9d081b9bdd08199bdd5b99608a1b6044820152606490fd5b346101a55760003660031901126101a557602060405160008152f35b346101a55760203660031901126101a557600435610c75611861565b806000526002602052604060002060ff815460e01c1660018114908115610d52575b5015610d0d57805460ff60e01b1916600160e21b178155600080516020611a3e83398151915290606090610cf09060ff90610cdb426001600160401b0316826116b9565b8054908260e81b198216905560e01c16611707565b610cfd60405180926116e4565b60046020820152336040820152a2005b60405162461bcd60e51b815260206004820152601d60248201527f496e76616c69642073746174757320666f7220636f6d706c6574696f6e0000006044820152606490fd5b600291501483610c97565b346101a55760403660031901126101a557610d76611622565b600435600052600060205260406000209060018060a01b0316600052602052602060ff604060002054166040519015158152f35b346101a55760603660031901126101a5576004356024356001600160401b0381116101a557610ddd903690600401611638565b906044356001600160401b0381116101a557610dfd903690600401611638565b91610e06611861565b610e0e611a1b565b8284036110675760328411611030578315610ffd578460005260026020526040600020610e4160ff825460e81c1661174c565b5a9360009560005b818110610e9157887f053d4c08fc986e3c0791fe75c516877e7f59dae0677200ec4a079d4722c8d8ad60408a610e808b5a906117e2565b82519182526020820152a260018055005b610e9c81838761178c565b356001600160a01b0381168082036101a557610eb983868a61178c565b35908b60005260036020528b6001600160801b036040806000206000908582526020522054161580610fe0575b610ef7575b50505050600101610e49565b60018095949c610fac926001600160801b038084818e54160116166001600160801b03198c5416178b5560405190610f2e82611716565b6001600160801b034216825260208201906001600160801b038816825260005260036020526001600160801b03806040806000206000908a825260205220935116166001600160801b0319835416178255516001600160801b0382549181199060801b169116179055019b8d6000526004602052604060002061179c565b8b7fdf345647e2c3fd49c2f0b2c0eb16dc4d90df72e8bb497e6e2942fd7b908961136020604051428152a4908a808b610eeb565b5087546001600160801b0363ffffffff8260c01c16911610610ee6565b60405162461bcd60e51b815260206004820152600b60248201526a08adae0e8f240c4c2e8c6d60ab1b6044820152606490fd5b60405162461bcd60e51b815260206004820152600f60248201526e426174636820746f6f206c6172676560881b6044820152606490fd5b60405162461bcd60e51b8152602060048201526015602482015274082e4e4c2f240d8cadccee8d040dad2e6dac2e8c6d605b1b6044820152606490fd5b346101a55760403660031901126101a5576110bd611622565b600060206040516110cd81611716565b8281520152600435600052600360205260406000209060018060a01b03166000526020526040806000206001600160801b0382519161110b83611716565b54602082821693848152019060801c8152835192835251166020820152f35b346101a55760003660031901126101a557602060405160028152f35b346101a55760203660031901126101a557600435600052600260205260a060406000205460ff604051916001600160801b03811683526001600160401b038160801c16602084015263ffffffff8160c01c166040840152818160e01c16606084015260e81c1615156080820152f35b346101a55760203660031901126101a5576004356111d16117ef565b806000526002602052604060002060ff815460e01c16600481146112a6576003811461126157600080516020611a3e83398151915291611212606092611707565b815460ff60e01b1916600360e01b17825590611237426001600160401b0316826116b9565b805460ff60e81b19169055604051906112519082906116e4565b60036020820152336040820152a2005b60405162461bcd60e51b815260206004820152601760248201527f4576656e7420616c72656164792063616e63656c6c65640000000000000000006044820152606490fd5b60405162461bcd60e51b815260206004820152601d60248201527f43616e6e6f742063616e63656c20636f6d706c65746564206576656e740000006044820152606490fd5b346101a55760403660031901126101a557611304611622565b336001600160a01b038216036113205761070190600435611999565b63334bd91960e11b60005260046000fd5b346101a55760403660031901126101a557610701600435611350611622565b9061136c6106f782600052600060205260016040600020015490565b61190e565b346101a55760203660031901126101a5576004356001600160a01b038116908190036101a55760005260056020526020604060002054604051908152f35b346101a55760203660031901126101a55760206113dc600435600052600060205260016040600020015490565b604051908152f35b346101a55760003660031901126101a55760206040517fbf233dd2aafeb4d50879c4aa5c81e96d92f6e6945c906a58f9f2d1c1631b4b268152f35b346101a55760203660031901126101a55760043561143b611861565b8060005260026020526040600020600260ff825460e01c16036114b557805460ff60e01b1916600160e01b17815561147c426001600160401b0316826116b9565b600160e81b60ff60e81b19825416179055600080516020611a3e83398151915260606040516002815260016020820152336040820152a2005b60405162461bcd60e51b815260206004820152601d60248201527f43616e206f6e6c7920726573756d6520706175736564206576656e74730000006044820152606490fd5b346101a55760203660031901126101a5576004356115166117ef565b8060005260026020526040600020600160ff825460e01c160361158a57805460ff60e01b1916600160e11b178155611557426001600160401b0316826116b9565b60ff60e81b198154169055600080516020611a3e83398151915260606040516001815260026020820152336040820152a2005b60405162461bcd60e51b815260206004820152601c60248201527f43616e206f6e6c7920706175736520616374697665206576656e7473000000006044820152606490fd5b346101a55760203660031901126101a5576004359063ffffffff60e01b82168092036101a557602091637965db0b60e01b8114908115611611575b5015158152f35b6301ffc9a760e01b1490508361160a565b602435906001600160a01b03821682036101a557565b9181601f840112156101a5578235916001600160401b0383116101a5576020808501948460051b0101116101a557565b60409060031901126101a5576004359060243563ffffffff811681036101a55790565b80548210156116a35760005260206000200190600090565b634e487b7160e01b600052603260045260246000fd5b805467ffffffffffffffff60801b191660809290921b67ffffffffffffffff60801b16919091179055565b9060058210156116f15752565b634e487b7160e01b600052602160045260246000fd5b60ff1660058110156116f15790565b604081019081106001600160401b03821117610a9d57604052565b60a081019081106001600160401b03821117610a9d57604052565b1561175357565b60405162461bcd60e51b815260206004820152601160248201527010da1958dacb5a5b88191a5cd8589b1959607a1b6044820152606490fd5b91908110156116a35760051b0190565b805468010000000000000000811015610a9d576117be9160018201815561168b565b81546001600160a01b0393841660039290921b91821b9390911b1916919091179055565b919082039182116106a657565b3360009081527f3c1b1854ab1360abbb06c8d4c6b2672d4b8cedc5eff522ab19e51d5cb8fdbd46602052604090205460ff161561182857565b63e2517d3f60e01b600052336004527fbf233dd2aafeb4d50879c4aa5c81e96d92f6e6945c906a58f9f2d1c1631b4b2660245260446000fd5b3360009081527fee57cd81e84075558e8fcc182a1f4393f91fc97f963a136e66b7f949a62f319f602052604090205460ff161561189a57565b63e2517d3f60e01b600052336004527f97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b92960245260446000fd5b60008181526020818152604080832033845290915290205460ff16156118f65750565b63e2517d3f60e01b6000523360045260245260446000fd5b6000818152602081815260408083206001600160a01b038616845290915290205460ff16611992576000818152602081815260408083206001600160a01b0395909516808452949091528120805460ff19166001179055339291907f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d9080a4600190565b5050600090565b6000818152602081815260408083206001600160a01b038616845290915290205460ff1615611992576000818152602081815260408083206001600160a01b0395909516808452949091528120805460ff19169055339291907ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b9080a4600190565b600260015414611a2c576002600155565b633ee5aeb560e01b60005260046000fdfeae66aa0afdf02b5bdb89d2873363463955756012d23c918051dd2ef7bd726720a2646970667358221220880df5a9fa0a5445764a10decd523a4e38ba5a3253cf17c9e053b7b3cac5cab564736f6c634300081e00332f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0dee57cd81e84075558e8fcc182a1f4393f91fc97f963a136e66b7f949a62f319f3c1b1854ab1360abbb06c8d4c6b2672d4b8cedc5eff522ab19e51d5cb8fdbd46ad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5",
+  "deployedBytecode": "0x608080604052600436101561001357600080fd5b60003560e01c90816301ffc9a7146115cf575080630b871eba146114fa578063110a33161461141f57806320df4359146113e4578063248a9ca3146113af57806327f0bfd6146113715780632f2ff15d1461133157806336568abe146112eb5780633f69babd146111b55780634f9876931461114657806356e5d4bd1461112a5780635940c150146110a45780638fdd082114610daa57806391d1485414610d5d5780639b7aea7514610c59578063a217fddf14610c3d578063a59a695314610ad2578063ad395c14146109ea578063afb9730c14610997578063b220f33d146108d2578063bd92d1eb1461087a578063c1ba956814610703578063d547741f146106bc578063d769473314610401578063e46f8415146102b9578063e5fc78c4146101e5578063f5b541a6146101aa5763fb690d591461015357600080fd5b346101a55760403660031901126101a5576024356004356000526004602052604060002080548210156101a55760209161018c9161168b565b905460405160039290921b1c6001600160a01b03168152f35b600080fd5b346101a55760003660031901126101a55760206040517f97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b9298152f35b346101a55760203660031901126101a5576000608060405161020681611731565b8281528260208201528260408201528260608201520152600435600052600260205260a060406000206040519061023c82611731565b5460ff6001600160801b0382169283815263ffffffff602082016001600160401b038560801c1681526001600160401b036040840191838760c01c1683528560806060870196828a60e01c168852019760e81c16151587526040519788525116602087015251166040850152511660608301525115156080820152f35b346101a5576102c736611668565b6102cf611861565b816000526002602052604060002090815460ff8160e01c166103b05763ffffffff82166001600160801b038216811061035f57835463ffffffff60c01b191660c09390931b63ffffffff60c01b16929092179092557ff70fccdc5af71fe4c42f217c6761972d9775eedfec44ed9f02eaeae85c60ea609160409163ffffffff83519260c01c1682526020820152a2005b60405162461bcd60e51b815260206004820152602360248201527f43616e6e6f74207365742062656c6f772063757272656e7420617474656e64616044820152626e636560e81b6064820152608490fd5b60405162461bcd60e51b815260206004820152602360248201527f43616e206f6e6c7920757064617465206265666f7265206576656e742073746160448201526272747360e81b6064820152608490fd5b346101a55760603660031901126101a55760043561041d611622565b604435610428611861565b610430611a1b565b336000526005602052604060002054600281018091116106a657421061066b57336000526005602052426040600020558260005260026020526040600020805461047f60ff8260e81c1661174c565b63ffffffff6001600160801b0382169160c01c1681101561062e57846000526003602052604060002060018060a01b0385166000526020526001600160801b03604060002054166105f457610572916001600160801b038060015a940116166001600160801b03198254161790556040516104f981611716565b426001600160801b039081168252848116602080840191825260008981526003825260408082206001600160a01b038b16835283528082209551935160801b6fffffffffffffffffffffffffffffffff191693909416929092179093558781526004909252902061056b90859061179c565b5a906117e2565b60405142815290926001600160a01b03169084907fdf345647e2c3fd49c2f0b2c0eb16dc4d90df72e8bb497e6e2942fd7b9089611390602090a46188b881116105bc575b60018055005b60407f053d4c08fc986e3c0791fe75c516877e7f59dae0677200ec4a079d4722c8d8ad91815190600182526020820152a280806105b6565b60405162461bcd60e51b815260206004820152601260248201527120b63932b0b23c9031b432b1b5b2b21034b760711b6044820152606490fd5b60405162461bcd60e51b815260206004820152601560248201527413585e08185d1d195b9919595cc81c995858da1959605a1b6044820152606490fd5b60405162461bcd60e51b815260206004820152601360248201527214985d19481b1a5b5a5d08195e18d959591959606a1b6044820152606490fd5b634e487b7160e01b600052601160045260246000fd5b346101a55760403660031901126101a5576107016004356106db611622565b906106fc6106f782600052600060205260016040600020015490565b6118d3565b611999565b005b346101a55761071136611668565b610719611861565b8160005260026020526001600160401b0360406000205460801c16610835576040519061074582611731565b6000825260208201906001600160401b034216825263ffffffff60408401911681526107de63ffffffff6060850192600084526107be6001600160401b036080880196600088528960005260026020526001600160801b038060406000209a5116166001600160801b03198a54161789555116876116b9565b51855463ffffffff60c01b1916911660c01b63ffffffff60c01b16178455565b518254915161ffff60e01b1990921660e09190911b60ff60e01b161790151560e81b60ff60e81b1617905560408051600080825260208201523391810191909152600080516020611a3e83398151915290606090a2005b60405162461bcd60e51b815260206004820152601960248201527f4576656e7420616c726561647920696e697469616c697a6564000000000000006044820152606490fd5b346101a55760403660031901126101a557610893611622565b600435600052600360205260406000209060018060a01b0316600052602052604080600020548151906001600160801b038116825260801c6020820152f35b346101a55760203660031901126101a5576000600435600052600260205260406000206040519061090282611731565b54916001600160801b038316918281526001600160401b038460801c166020820152608060ff63ffffffff8660c01c1695866040850152818160e01c16606085015260e81c1615159101528215801561096c575b5060609260405192835260208301526040820152f35b90506109815761271081028290046060610956565b634e487b7160e01b600052601260045260246000fd5b346101a55760403660031901126101a5576109b0611622565b600435600052600360205260406000209060018060a01b031660005260205260206001600160801b03604060002054161515604051908152f35b346101a55760203660031901126101a55760043560005260046020526040600020604051908160208254918281520190819260005260206000209060005b818110610ab357505050829003601f01601f191682016001600160401b03811183821017610a9d57604081815260208083528451908301819052919283929183019160005b818110610a7b575050500390f35b82516001600160a01b0316845285945060209384019390920191600101610a6d565b634e487b7160e01b600052604160045260246000fd5b82546001600160a01b0316845260209093019260019283019201610a28565b346101a55760203660031901126101a557600435610aee611861565b806000526002602052604060002080546001600160401b038160801c1615610c065760e01c60ff16610bc157610b5c905a815460ff60e01b1916600160e01b17825590610b44426001600160401b0316826116b9565b805460ff60e81b1916600160e81b1790555a906117e2565b81600080516020611a3e83398151915260606040516000815260016020820152336040820152a261c3508111610b8e57005b60407f053d4c08fc986e3c0791fe75c516877e7f59dae0677200ec4a079d4722c8d8ad91815190600082526020820152a2005b60405162461bcd60e51b815260206004820152601960248201527f496e76616c696420737461747573207472616e736974696f6e000000000000006044820152606490fd5b60405162461bcd60e51b815260206004820152600f60248201526e115d995b9d081b9bdd08199bdd5b99608a1b6044820152606490fd5b346101a55760003660031901126101a557602060405160008152f35b346101a55760203660031901126101a557600435610c75611861565b806000526002602052604060002060ff815460e01c1660018114908115610d52575b5015610d0d57805460ff60e01b1916600160e21b178155600080516020611a3e83398151915290606090610cf09060ff90610cdb426001600160401b0316826116b9565b8054908260e81b198216905560e01c16611707565b610cfd60405180926116e4565b60046020820152336040820152a2005b60405162461bcd60e51b815260206004820152601d60248201527f496e76616c69642073746174757320666f7220636f6d706c6574696f6e0000006044820152606490fd5b600291501483610c97565b346101a55760403660031901126101a557610d76611622565b600435600052600060205260406000209060018060a01b0316600052602052602060ff604060002054166040519015158152f35b346101a55760603660031901126101a5576004356024356001600160401b0381116101a557610ddd903690600401611638565b906044356001600160401b0381116101a557610dfd903690600401611638565b91610e06611861565b610e0e611a1b565b8284036110675760328411611030578315610ffd578460005260026020526040600020610e4160ff825460e81c1661174c565b5a9360009560005b818110610e9157887f053d4c08fc986e3c0791fe75c516877e7f59dae0677200ec4a079d4722c8d8ad60408a610e808b5a906117e2565b82519182526020820152a260018055005b610e9c81838761178c565b356001600160a01b0381168082036101a557610eb983868a61178c565b35908b60005260036020528b6001600160801b036040806000206000908582526020522054161580610fe0575b610ef7575b50505050600101610e49565b60018095949c610fac926001600160801b038084818e54160116166001600160801b03198c5416178b5560405190610f2e82611716565b6001600160801b034216825260208201906001600160801b038816825260005260036020526001600160801b03806040806000206000908a825260205220935116166001600160801b0319835416178255516001600160801b0382549181199060801b169116179055019b8d6000526004602052604060002061179c565b8b7fdf345647e2c3fd49c2f0b2c0eb16dc4d90df72e8bb497e6e2942fd7b908961136020604051428152a4908a808b610eeb565b5087546001600160801b0363ffffffff8260c01c16911610610ee6565b60405162461bcd60e51b815260206004820152600b60248201526a08adae0e8f240c4c2e8c6d60ab1b6044820152606490fd5b60405162461bcd60e51b815260206004820152600f60248201526e426174636820746f6f206c6172676560881b6044820152606490fd5b60405162461bcd60e51b8152602060048201526015602482015274082e4e4c2f240d8cadccee8d040dad2e6dac2e8c6d605b1b6044820152606490fd5b346101a55760403660031901126101a5576110bd611622565b600060206040516110cd81611716565b8281520152600435600052600360205260406000209060018060a01b03166000526020526040806000206001600160801b0382519161110b83611716565b54602082821693848152019060801c8152835192835251166020820152f35b346101a55760003660031901126101a557602060405160028152f35b346101a55760203660031901126101a557600435600052600260205260a060406000205460ff604051916001600160801b03811683526001600160401b038160801c16602084015263ffffffff8160c01c166040840152818160e01c16606084015260e81c1615156080820152f35b346101a55760203660031901126101a5576004356111d16117ef565b806000526002602052604060002060ff815460e01c16600481146112a6576003811461126157600080516020611a3e83398151915291611212606092611707565b815460ff60e01b1916600360e01b17825590611237426001600160401b0316826116b9565b805460ff60e81b19169055604051906112519082906116e4565b60036020820152336040820152a2005b60405162461bcd60e51b815260206004820152601760248201527f4576656e7420616c72656164792063616e63656c6c65640000000000000000006044820152606490fd5b60405162461bcd60e51b815260206004820152601d60248201527f43616e6e6f742063616e63656c20636f6d706c65746564206576656e740000006044820152606490fd5b346101a55760403660031901126101a557611304611622565b336001600160a01b038216036113205761070190600435611999565b63334bd91960e11b60005260046000fd5b346101a55760403660031901126101a557610701600435611350611622565b9061136c6106f782600052600060205260016040600020015490565b61190e565b346101a55760203660031901126101a5576004356001600160a01b038116908190036101a55760005260056020526020604060002054604051908152f35b346101a55760203660031901126101a55760206113dc600435600052600060205260016040600020015490565b604051908152f35b346101a55760003660031901126101a55760206040517fbf233dd2aafeb4d50879c4aa5c81e96d92f6e6945c906a58f9f2d1c1631b4b268152f35b346101a55760203660031901126101a55760043561143b611861565b8060005260026020526040600020600260ff825460e01c16036114b557805460ff60e01b1916600160e01b17815561147c426001600160401b0316826116b9565b600160e81b60ff60e81b19825416179055600080516020611a3e83398151915260606040516002815260016020820152336040820152a2005b60405162461bcd60e51b815260206004820152601d60248201527f43616e206f6e6c7920726573756d6520706175736564206576656e74730000006044820152606490fd5b346101a55760203660031901126101a5576004356115166117ef565b8060005260026020526040600020600160ff825460e01c160361158a57805460ff60e01b1916600160e11b178155611557426001600160401b0316826116b9565b60ff60e81b198154169055600080516020611a3e83398151915260606040516001815260026020820152336040820152a2005b60405162461bcd60e51b815260206004820152601c60248201527f43616e206f6e6c7920706175736520616374697665206576656e7473000000006044820152606490fd5b346101a55760203660031901126101a5576004359063ffffffff60e01b82168092036101a557602091637965db0b60e01b8114908115611611575b5015158152f35b6301ffc9a760e01b1490508361160a565b602435906001600160a01b03821682036101a557565b9181601f840112156101a5578235916001600160401b0383116101a5576020808501948460051b0101116101a557565b60409060031901126101a5576004359060243563ffffffff811681036101a55790565b80548210156116a35760005260206000200190600090565b634e487b7160e01b600052603260045260246000fd5b805467ffffffffffffffff60801b191660809290921b67ffffffffffffffff60801b16919091179055565b9060058210156116f15752565b634e487b7160e01b600052602160045260246000fd5b60ff1660058110156116f15790565b604081019081106001600160401b03821117610a9d57604052565b60a081019081106001600160401b03821117610a9d57604052565b1561175357565b60405162461bcd60e51b815260206004820152601160248201527010da1958dacb5a5b88191a5cd8589b1959607a1b6044820152606490fd5b91908110156116a35760051b0190565b805468010000000000000000811015610a9d576117be9160018201815561168b565b81546001600160a01b0393841660039290921b91821b9390911b1916919091179055565b919082039182116106a657565b3360009081527f3c1b1854ab1360abbb06c8d4c6b2672d4b8cedc5eff522ab19e51d5cb8fdbd46602052604090205460ff161561182857565b63e2517d3f60e01b600052336004527fbf233dd2aafeb4d50879c4aa5c81e96d92f6e6945c906a58f9f2d1c1631b4b2660245260446000fd5b3360009081527fee57cd81e84075558e8fcc182a1f4393f91fc97f963a136e66b7f949a62f319f602052604090205460ff161561189a57565b63e2517d3f60e01b600052336004527f97667070c54ef182b0f5858b034beac1b6f3089aa2d3188bb1e8929f4fa9b92960245260446000fd5b60008181526020818152604080832033845290915290205460ff16156118f65750565b63e2517d3f60e01b6000523360045260245260446000fd5b6000818152602081815260408083206001600160a01b038616845290915290205460ff16611992576000818152602081815260408083206001600160a01b0395909516808452949091528120805460ff19166001179055339291907f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d9080a4600190565b5050600090565b6000818152602081815260408083206001600160a01b038616845290915290205460ff1615611992576000818152602081815260408083206001600160a01b0395909516808452949091528120805460ff19169055339291907ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b9080a4600190565b600260015414611a2c576002600155565b633ee5aeb560e01b60005260046000fdfeae66aa0afdf02b5bdb89d2873363463955756012d23c918051dd2ef7bd726720a2646970667358221220880df5a9fa0a5445764a10decd523a4e38ba5a3253cf17c9e053b7b3cac5cab564736f6c634300081e0033",
+  "devdoc": {
+    "details": "event lifecycle mgmnt",
+    "errors": {
+      "AccessControlBadConfirmation()": [
+        {
+          "details": "The caller of a function is not the expected one. NOTE: Don't confuse with {AccessControlUnauthorizedAccount}."
+        }
+      ],
+      "AccessControlUnauthorizedAccount(address,bytes32)": [
+        {
+          "details": "The `account` is missing a role."
+        }
+      ],
+      "ReentrancyGuardReentrantCall()": [
+        {
+          "details": "Unauthorized reentrant call."
+        }
+      ]
+    },
+    "events": {
+      "RoleAdminChanged(bytes32,bytes32,bytes32)": {
+        "details": "Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted signaling this."
+      },
+      "RoleGranted(bytes32,address,address)": {
+        "details": "Emitted when `account` is granted `role`. `sender` is the account that originated the contract call, an admin role bearer except when using {AccessControl-_setupRole}."
+      },
+      "RoleRevoked(bytes32,address,address)": {
+        "details": "Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call:   - if using `revokeRole`, it is the admin role bearer   - if using `renounceRole`, it is the role bearer (i.e. `account`)"
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "batchCheckIn(uint256,address[],uint256[])": {
+        "details": "Batch check-in for efficient mass processing",
+        "params": {
+          "attendees": "Array of attendee addresses",
+          "eventId": "Event ID",
+          "ticketIds": "Array of corresponding ticket IDs"
+        }
+      },
+      "cancelEvent(uint256)": {
+        "details": "Cancel event (emergency or creator decision)",
+        "params": {
+          "eventId": "Event to cancel"
+        }
+      },
+      "checkInAttendee(uint256,address,uint256)": {
+        "details": "Check in single attendee with QR code verification",
+        "params": {
+          "attendee": "Attendee address",
+          "eventId": "Event ID",
+          "ticketId": "NFT ticket ID for verification"
+        }
+      },
+      "completeEvent(uint256)": {
+        "details": "Complete event and finalize attendance",
+        "params": {
+          "eventId": "Event to complete"
+        }
+      },
+      "getAttendanceStats(uint256)": {
+        "details": "Get event attendance statistics",
+        "params": {
+          "eventId": "Event ID"
+        },
+        "returns": {
+          "attendanceRate": "Percentage (basis points)",
+          "attendeeCount": "Current attendees",
+          "maxAttendees": "Maximum allowed"
+        }
+      },
+      "getAttendeeCheckIn(uint256,address)": {
+        "details": "Get attendee check-in data",
+        "params": {
+          "attendee": "Attendee address",
+          "eventId": "Event ID"
+        },
+        "returns": {
+          "_0": "Check-in data struct"
+        }
+      },
+      "getEventAttendees(uint256)": {
+        "details": "Get all checked-in attendees for an event",
+        "params": {
+          "eventId": "Event ID"
+        },
+        "returns": {
+          "_0": "Array of attendee addresses"
+        }
+      },
+      "getEventState(uint256)": {
+        "details": "Get complete event state",
+        "params": {
+          "eventId": "Event ID"
+        },
+        "returns": {
+          "_0": "Event state struct"
+        }
+      },
+      "getRoleAdmin(bytes32)": {
+        "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+      },
+      "grantRole(bytes32,address)": {
+        "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event."
+      },
+      "hasRole(bytes32,address)": {
+        "details": "Returns `true` if `account` has been granted `role`."
+      },
+      "initializeEvent(uint256,uint32)": {
+        "details": "Initialize event state when created by EventFactory",
+        "params": {
+          "eventId": "Unique event identifier",
+          "maxAttendees": "Maximum number of attendees allowed"
+        }
+      },
+      "isAttendeeCheckedIn(uint256,address)": {
+        "details": "Check if attendee is checked in",
+        "params": {
+          "attendee": "Attendee address",
+          "eventId": "Event ID"
+        },
+        "returns": {
+          "_0": "True if checked in"
+        }
+      },
+      "pauseEvent(uint256)": {
+        "details": "Pause event (emergency scenarios)",
+        "params": {
+          "eventId": "Event to pause"
+        }
+      },
+      "renounceRole(bytes32,address)": {
+        "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event."
+      },
+      "resumeEvent(uint256)": {
+        "details": "Resume paused event",
+        "params": {
+          "eventId": "Event to resume"
+        }
+      },
+      "revokeRole(bytes32,address)": {
+        "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event."
+      },
+      "startEvent(uint256)": {
+        "details": "Start event and enable check-ins",
+        "params": {
+          "eventId": "Event to start"
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "See {IERC165-supportsInterface}."
+      },
+      "updateMaxAttendees(uint256,uint32)": {
+        "details": "Update maximum attendees (before event starts)",
+        "params": {
+          "eventId": "Event ID",
+          "newMaxAttendees": "New maximum attendee count"
+        }
+      }
+    },
+    "title": "EventManager",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "notice": "Handles event status transitions, check-ins, and real-time attendee tracking",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 26,
+        "contract": "contracts/platform/events/EventManager.sol:EventManager",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_bytes32,t_struct(RoleData)21_storage)"
+      },
+      {
+        "astId": 3710,
+        "contract": "contracts/platform/events/EventManager.sol:EventManager",
+        "label": "_status",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 12177,
+        "contract": "contracts/platform/events/EventManager.sol:EventManager",
+        "label": "eventStates",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_uint256,t_struct(EventState)12167_storage)"
+      },
+      {
+        "astId": 12184,
+        "contract": "contracts/platform/events/EventManager.sol:EventManager",
+        "label": "attendeeCheckIns",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_uint256,t_mapping(t_address,t_struct(CheckInData)12172_storage))"
+      },
+      {
+        "astId": 12189,
+        "contract": "contracts/platform/events/EventManager.sol:EventManager",
+        "label": "eventAttendees",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_array(t_address)dyn_storage)"
+      },
+      {
+        "astId": 12193,
+        "contract": "contracts/platform/events/EventManager.sol:EventManager",
+        "label": "lastActionTime",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_address,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_address)dyn_storage": {
+        "base": "t_address",
+        "encoding": "dynamic_array",
+        "label": "address[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_struct(CheckInData)12172_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct EventManager.CheckInData)",
+        "numberOfBytes": "32",
+        "value": "t_struct(CheckInData)12172_storage"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_bytes32,t_struct(RoleData)21_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+        "numberOfBytes": "32",
+        "value": "t_struct(RoleData)21_storage"
+      },
+      "t_mapping(t_uint256,t_array(t_address)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => address[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_address)dyn_storage"
+      },
+      "t_mapping(t_uint256,t_mapping(t_address,t_struct(CheckInData)12172_storage))": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => mapping(address => struct EventManager.CheckInData))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_struct(CheckInData)12172_storage)"
+      },
+      "t_mapping(t_uint256,t_struct(EventState)12167_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct EventManager.EventState)",
+        "numberOfBytes": "32",
+        "value": "t_struct(EventState)12167_storage"
+      },
+      "t_struct(CheckInData)12172_storage": {
+        "encoding": "inplace",
+        "label": "struct EventManager.CheckInData",
+        "members": [
+          {
+            "astId": 12169,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "checkInTime",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 12171,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "ticketId",
+            "offset": 16,
+            "slot": "0",
+            "type": "t_uint128"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(EventState)12167_storage": {
+        "encoding": "inplace",
+        "label": "struct EventManager.EventState",
+        "members": [
+          {
+            "astId": 12158,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "attendeeCount",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint128"
+          },
+          {
+            "astId": 12160,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "statusChangeTime",
+            "offset": 16,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 12162,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "maxAttendees",
+            "offset": 24,
+            "slot": "0",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 12164,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "status",
+            "offset": 28,
+            "slot": "0",
+            "type": "t_uint8"
+          },
+          {
+            "astId": 12166,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "checkInEnabled",
+            "offset": 29,
+            "slot": "0",
+            "type": "t_bool"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(RoleData)21_storage": {
+        "encoding": "inplace",
+        "label": "struct AccessControl.RoleData",
+        "members": [
+          {
+            "astId": 18,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "hasRole",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_address,t_bool)"
+          },
+          {
+            "astId": 20,
+            "contract": "contracts/platform/events/EventManager.sol:EventManager",
+            "label": "adminRole",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bytes32"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_uint128": {
+        "encoding": "inplace",
+        "label": "uint128",
+        "numberOfBytes": "16"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      },
+      "t_uint8": {
+        "encoding": "inplace",
+        "label": "uint8",
+        "numberOfBytes": "1"
+      }
+    }
+  }
+}
